@@ -36,6 +36,8 @@ model Project {
     deletedAt DateTime?
 
     usertoProjects UserToProjects[]
+
+    commits Commit[]
 }
 
 // Many to Many relationship
@@ -46,6 +48,24 @@ model UserToProjects {
 
     user User @relation(fields: [userId], references: [id])
     userId String
+
+    project Project @relation(fields: [projectId], references: [id])
+    projectId String
+}
+
+model Commit {
+    id String @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    commitMessage String
+    commitHash String
+    commitAuthorName String
+    commitAuthorAvatar String
+    commitDate DateTime
+
+    summary String
+
 
     project Project @relation(fields: [projectId], references: [id])
     projectId String

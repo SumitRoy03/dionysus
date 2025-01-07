@@ -22,7 +22,7 @@ const SidebarLayout = ({children} : SidebarLayoutProps) => {
 
             <div className="h-4"></div>
                 {/* main content */}
-                <div className='border-sidebar-border bg-sidebar border shadow rounded-md overflow-y-scroll h-[calc(100vh-6rem)]'>
+                <div className='border-sidebar-border bg-sidebar border shadow rounded-md overflow-y-scroll h-[calc(100vh-6rem)] p-2 px-4'>
                     {children}
                 </div>
         </main>
