@@ -18,10 +18,15 @@ type Response = {
 }
 
 export const getCommitHashes = async (githubUrl : string): Promise<Response[]> => {
-    const [owner, repo] = githubUrl.split('/').slice(-2);
-    if(!owner || !repo) {
-        throw new Error('Invalid github url');
-    }
+    const cleanedUrl = githubUrl.replace(/\/$/, '');
+
+// Split the URL and extract owner and repo
+const [owner, repo] = cleanedUrl.split('/').slice(-2);
+
+if (!owner || !repo) {
+    throw new Error('Invalid github url');
+}
+
     const {data} = await octokit.rest.repos.listCommits({
         owner : owner,
         repo : repo,
@@ -39,26 +44,20 @@ export const getCommitHashes = async (githubUrl : string): Promise<Response[]> =
 
 export const pollCommits = async (projectId : string) => {
     const { project, githubUrl } = await fetchProjetGithubUrl(projectId);
-    console.log('github : ',githubUrl);
-    console.log('owner', githubUrl.split('/')[3])
-    console.log('repo', githubUrl.split('/')[4])
     const commitHashes = await getCommitHashes(githubUrl);
 
     const unprocessedCommits = await filterUnprocessedCommits(projectId, commitHashes);
     const summaryResponses = await Promise.allSettled(unprocessedCommits.map((commit) => {
         return summariseCommit(githubUrl, commit.commitHash);
     }))
-    console.log('summaryResponses', summaryResponses);
     const summaries = summaryResponses.map((summary) => {
         if(summary.status === 'fulfilled') {
             return summary.value as string;
         }
         return '';
     })
-    // console.log(unprocessedCommits);
-    const commits = await db.commit.createMany({
+        const commits = await db.commit.createMany({
         data: summaries.map((summary, index) => {
-            console.log(`processing commit ${index}`)
             return {
             projectId,
             commitHash: unprocessedCommits[index]!.commitHash,
@@ -76,7 +75,6 @@ export const pollCommits = async (projectId : string) => {
 
 async function summariseCommit(githubUrl: string, commitHash: string) {
     //get the diff, pass it to the ai model and return the response
-    console.log(`${githubUrl}/commit/${commitHash}.diff`);
     const { data } = await axios.get(`${githubUrl}/commit/${commitHash}.diff`,{
         headers: {
             Accept: 'application/vnd.github.v3.diff'
