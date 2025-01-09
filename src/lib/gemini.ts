@@ -1,4 +1,5 @@
 import {GoogleGenerativeAI} from '@google/generative-ai'
+import { Document } from '@langchain/core/documents'
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
@@ -7,6 +8,7 @@ const model = genAI.getGenerativeModel({
 })
 
 export const generate_summary = async (diff : string) => {
+    console.log(typeof(diff));
     const response = await model.generateContent([
         `For every file, there are a few metadata lines, like (for example):
 \`\`\`
@@ -40,4 +42,36 @@ Please summarise the following diff file: \n\n${diff}`
 
     return response.response.text();
 
+}
+
+export const summariseCode = async (doc: Document) => {
+    // console.log('generating summary for', doc.metadata.source);
+    const code = doc.pageContent.slice(0, 10000);
+    try {
+        const response = await model.generateContent([
+            `You are an intelligent senior software developer who specializes in onboarding new developers.
+            You are onboarding a new developer who is a junior software developer and explain to them the purpose of the ${doc.metadata.source} file.
+            Here is the code snippet:
+            ---
+            ${code}
+            ---
+            Give a brief explanation of the purpose of the file in no more than 100 words.`
+        ]);
+    
+        return response.response.text();
+        
+    } catch (error) {
+        return `error in summary generation for ${doc.metadata.source} and code length = ${code.length}`
+    }
+}
+
+
+export const generateEmbedding = async (summary: string) => {
+    const model = genAI.getGenerativeModel({
+        model: 'text-embedding-004',
+    })
+
+    const result = await model.embedContent(summary);
+    const embedding = result.embedding;
+    return embedding;
 }

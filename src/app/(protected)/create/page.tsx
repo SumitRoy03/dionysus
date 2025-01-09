@@ -6,6 +6,7 @@ import useRefetch from '@/hooks/use-refetch';
 import { api } from '@/trpc/react';
 import { on } from 'events';
 import Image from 'next/image'
+import { redirect } from 'next/navigation';
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner';
@@ -34,6 +35,7 @@ const CreatePage = () => {
                 reset();
                 toast.success('Project created successfully');
                 refetch();
+                // redirect('/dashboard');
             },
             onError: (err) => {
                 toast.error(err.message);

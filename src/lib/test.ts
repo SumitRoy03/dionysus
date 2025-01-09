@@ -157,5 +157,5 @@ async function filterUnprocessedCommits(projectId: string, commitHashes: Respons
     return unprocessedCommits;
 }
 
-// console.log('Processing...');
-// console.log(await summariseCommit('https://github.com/docker/scout-cli','da332302b267fd9bf4a13f4b844685cc7fcd4e44'))
+console.log('Processing...');
+console.log(await summariseCommit('https://github.com/docker/scout-cli','da332302b267fd9bf4a13f4b844685cc7fcd4e44'))

@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+<!-- Think of some different AI agent for summary creation of code files and integrate with langchain -->
 # dionysus
 =======
 # Create T3 App
@@ -30,4 +30,3 @@ You can check out the [create-t3-app GitHub repository](https://github.com/t3-os
 ## How do I deploy this?
 
 Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
->>>>>>> 04b303f (basic ui structure)
