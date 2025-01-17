@@ -2,6 +2,7 @@ import { GithubRepoLoader } from '@langchain/community/document_loaders/web/gith
 import { Document } from '@langchain/core/documents'
 import { generateEmbedding, summariseCode } from './gemini';
 import { db } from '@/server/db';
+import axios from 'axios';
 
 interface ProcessingStatus {
     fileName: string;
@@ -12,12 +13,32 @@ interface ProcessingStatus {
     embedding?: number[];
 }
 
+
 //Working fine and successfully loads the docs
 export const loadGithubLoader = async (githubUrl:string, githubToken?: string) => {
 
+    const cleanedUrl = githubUrl.replace(/\/$/, '');
+
+// Split the URL and extract owner and repo
+const [owner, repo] = cleanedUrl.split('/').slice(-2);
+
+if (!owner || !repo) {
+    throw new Error('Invalid github url');
+}
+    // Fetch repository details to get the default branch
+    const apiUrl = `https://api.github.com/repos/${owner}/${repo}`;
+    const response = await axios.get(apiUrl, {
+      headers: {
+        Authorization: `Bearer ${githubToken || process.env.GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github.v3+json',
+      },
+    });
+    
+    const defaultBranch = response.data.default_branch || 'main'; // Fallback to 'master' if not available
+
         const loader = new GithubRepoLoader(githubUrl, {
            accessToken: githubToken || process.env.GITHUB_TOKEN,
-           branch: 'master',
+           branch: defaultBranch,
            ignoreFiles: ['package.json', 'package-lock.json', 'yarn.lock', 'node_modules', 'dist', 'build', 'coverage', 'public', 'out', 'tmp', 'temp', 'cache','pnpm-lock.yaml', 'bun.lockb'],
            recursive: true,
            unknown: 'warn',
