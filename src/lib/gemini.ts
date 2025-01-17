@@ -1,11 +1,37 @@
 import {GoogleGenerativeAI} from '@google/generative-ai'
 import { Document } from '@langchain/core/documents'
+import { writeFile, readFile, appendFile, access } from 'fs/promises';
+import { constants,mkdirSync } from 'fs';
+import path from 'path';
+
+const STORAGE_DIR = path.join(process.cwd(), 'data', 'summaries');
+const SUMMARY_FILE = path.join(STORAGE_DIR, 'code-summaries.csv');
+
+// Helper to ensure storage directory exists
+const ensureStorageDir = async () => {
+    try {
+        await access(STORAGE_DIR, constants.F_OK);
+    } catch {
+        mkdirSync(STORAGE_DIR, { recursive: true });
+        // Create empty CSV with headers if it doesn't exist
+        await writeFile(SUMMARY_FILE, 'fileSource,summary\n');
+    }
+};
+
+
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
 const model = genAI.getGenerativeModel({
     model : 'gemini-1.5-flash',  
 })
+
+// Store new summary
+const storeSummary = async (fileSource: string, summary: string) => {
+    const csvLine = `${fileSource},${summary.replace(/,/g, ';')}\n`;
+    await appendFile(SUMMARY_FILE, csvLine);
+};
+
 
 export const generate_summary = async (diff : string) => {
     console.log(typeof(diff));
@@ -44,26 +70,101 @@ Please summarise the following diff file: \n\n${diff}`
 
 }
 
-export const summariseCode = async (doc: Document) => {
-    // console.log('generating summary for', doc.metadata.source);
-    const code = doc.pageContent.slice(0, 10000);
-    try {
-        const response = await model.generateContent([
-            `You are an intelligent senior software developer who specializes in onboarding new developers.
-            You are onboarding a new developer who is a junior software developer and explain to them the purpose of the ${doc.metadata.source} file.
-            Here is the code snippet:
-            ---
-            ${code}
-            ---
-            Give a brief explanation of the purpose of the file in no more than 100 words.`
-        ]);
+// export const summariseCode = async (doc: Document) => {
+//     // console.log('generating summary for', doc.metadata.source);
+//     const code = doc.pageContent.slice(0, 10000);
+//     try {
+//         const response = await model.generateContent([
+//             `You are an intelligent senior software developer who specializes in onboarding new developers.
+//             You are onboarding a new developer who is a junior software developer and explain to them the purpose of the ${doc.metadata.source} file.
+//             Here is the code snippet:
+//             ---
+//             ${code}
+//             ---
+//             Give a brief explanation of the purpose of the file in no more than 100 words.`
+//         ]);
     
-        return response.response.text();
+//         return response.response.text();
         
+//     } catch (error) {
+//         return `error in summary generation for ${doc.metadata.source} and code length = ${code.length}`
+//     }
+// }
+
+
+export const summariseCode = async (doc: Document) => {
+
+    const maxRetries = 3;
+    const retryDelay = 1000; // 1 second delay between retries
+    
+    // Helper function to delay execution
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+    
+    // Helper function to clean and validate code
+    const prepareCode = (code: string) => {
+        if (!code.trim()) return null;
+        return code.slice(0, 10000); // Keep the 10k char limit
+    };
+    ensureStorageDir()
+    const tryGenerateSummary = async (attempt: number = 1): Promise<string> => {
+        try {
+            const code = prepareCode(doc.pageContent);
+            if (!code) {
+                return `Empty or invalid code in ${doc.metadata.source}`;
+            }
+            const fileName = path.basename(doc.metadata.source);
+            const fileExtension = path.extname(fileName);
+            const response = await model.generateContent([
+                `You are an expert software developer creating documentation for a codebase. Your task is to analyze the following code file and provide a clear, concise summary.
+
+File: ${fileName}
+Type: ${fileExtension} file
+Context: Part of a larger software project
+
+Instructions:
+1. Focus on explaining the main purpose and functionality of this file
+2. Identify key features or components implemented
+3. Note any important dependencies or integrations
+4. Keep the summary under 100 words and highly technical
+
+If this is a:
+- Component: Describe its UI/UX purpose and key props
+- Utility file: List main functions and their purposes
+- Type definition: Explain the key interfaces/types
+- Configuration: Describe what it configures
+- Test file: Explain what it tests
+
+Code to analyze:
+\`\`\`${fileExtension}
+${code}
+\`\`\`
+
+Summary format: "This [file type] [main purpose]. It [key functionality]. [Important details if any]."`
+            ]);
+            const summary = response.response.text();
+            await storeSummary(doc.metadata.source, summary);
+            return summary;
+            
+        } catch (error) {
+            console.error(`Attempt ${attempt} failed for ${doc.metadata.source}:`, error);
+            
+            if (attempt < maxRetries) {
+                await delay(retryDelay * attempt); // Exponential backoff
+                return tryGenerateSummary(attempt + 1);
+            }
+            
+            throw error;
+        }
+    };
+
+    try {
+        return await tryGenerateSummary();
     } catch (error) {
-        return `error in summary generation for ${doc.metadata.source} and code length = ${code.length}`
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        return `Failed to generate summary for ${doc.metadata.source} after ${maxRetries} attempts. Error: ${errorMessage}`;
     }
-}
+};  
+
 
 
 export const generateEmbedding = async (summary: string) => {
@@ -73,5 +174,5 @@ export const generateEmbedding = async (summary: string) => {
 
     const result = await model.embedContent(summary);
     const embedding = result.embedding;
-    return embedding;
+    return embedding.values;
 }

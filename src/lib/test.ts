@@ -1,161 +1,199 @@
+import { GithubRepoLoader } from '@langchain/community/document_loaders/web/github';
+import { Document } from '@langchain/core/documents';
 import { db } from '@/server/db';
-import { Octokit } from 'octokit'
-import axios from 'axios';
-import { generate_summary } from './gemini';
-const octokit = new Octokit({
-    auth: process.env.GITHUB_TOKEN,
-    });
+import {GoogleGenerativeAI} from '@google/generative-ai'
+import { loadGithubLoader } from './github-loader';
+
+import { writeFile, readFile, appendFile, access } from 'fs/promises';
+import { constants,mkdirSync } from 'fs';
+import path from 'path';
+
+const STORAGE_DIR = path.join(process.cwd(), 'data', 'summaries');
+const SUMMARY_FILE = path.join(STORAGE_DIR, 'code-summaries.csv');
+
+// Helper to ensure storage directory exists
+const ensureStorageDir = async () => {
+    try {
+        await access(STORAGE_DIR, constants.F_OK);
+    } catch {
+        await mkdirSync(STORAGE_DIR, { recursive: true });
+        // Create empty CSV with headers if it doesn't exist
+        await writeFile(SUMMARY_FILE, 'fileSource,summary\n');
+    }
+};
+
+// Helper to check if file exists
+const fileExists = async (filePath: string): Promise<boolean> => {
+    try {
+        await access(filePath, constants.F_OK);
+        return true;
+    } catch {
+        return false;
+    }
+};
 
 
-// WIP : commitAuthorName might be wrong!
-interface GitHubFile {
-    filename: string;
-    patch?: string;
-    status: string;
-    additions: number;
-    deletions: number;
-    changes: number;
-}
-
-type Response = {
-    commitHash : string;
-    commitMessage : string;
-    commitAuthorName : string;
-    commitAuthorAvatar : string;
-    commitDate : string;
-}
-
-export const getCommitHashes = async (githubUrl : string): Promise<Response[]> => {
-    const cleanedUrl = githubUrl.replace(/\/$/, '');
-
-// Split the URL and extract owner and repo
-const [owner, repo] = cleanedUrl.split('/').slice(-2);
-
-if (!owner || !repo) {
-    throw new Error('Invalid github url');
-}
-
-    const {data} = await octokit.rest.repos.listCommits({
-        owner : owner,
-        repo : repo,
-    })
-
-    const sortedCommits = data.sort((a:any, b:any) => new Date(b.commit.author.date).getTime() - new Date(a.commit.author.date).getTime()) as any[];
-    return sortedCommits.slice(0, 15).map((commit) => ({
-        commitHash: commit.sha as string,
-        commitMessage: commit.commit.message ?? "",
-        commitAuthorName: commit?.commit?.author.name ?? "",
-        commitAuthorAvatar: commit?.author?.avatar_url ?? "",
-        commitDate: commit?.commit?.author.date ?? "",
-    }))
-}
-
-export const pollCommits = async (projectId : string) => {
-    const { project, githubUrl } = await fetchProjetGithubUrl(projectId);
-    const commitHashes = await getCommitHashes(githubUrl);
-
-    const unprocessedCommits = await filterUnprocessedCommits(projectId, commitHashes);
-    const summaryResponses = await Promise.allSettled(unprocessedCommits.map((commit) => {
-        return summariseCommit(githubUrl, commit.commitHash);
-    }))
-    const summaries = summaryResponses.map((summary) => {
-        if(summary.status === 'fulfilled') {
-            return summary.value as string;
+// Helper to read existing summaries
+const readExistingSummaries = async (): Promise<Map<string, string>> => {
+    const summaries = new Map<string, string>();
+    try {
+        if (await fileExists(SUMMARY_FILE)) {
+            const content = await readFile(SUMMARY_FILE, 'utf-8');
+            content.split('\n').forEach(line => {
+                const [source, summary] = line.split(',');
+                if (source && summary) {
+                    summaries.set(source, summary);
+                }
+            });
         }
-        return '';
-    })
-        const commits = await db.commit.createMany({
-        data: summaries.map((summary, index) => {
-            return {
-            projectId,
-            commitHash: unprocessedCommits[index]!.commitHash,
-            commitMessage: unprocessedCommits[index]!.commitMessage,
-            commitAuthorName: unprocessedCommits[index]!.commitAuthorName,
-            commitAuthorAvatar: unprocessedCommits[index]!.commitAuthorAvatar,
-            commitDate: new Date(unprocessedCommits[index]!.commitDate),
-            summary
+    } catch (error) {
+        console.error('Error reading summaries:', error);
+    }
+    return summaries;
+};
+
+// Store new summary
+const storeSummary = async (fileSource: string, summary: string) => {
+    const csvLine = `${fileSource},${summary.replace(/,/g, ';')}\n`;
+    await appendFile(SUMMARY_FILE, csvLine);
+};
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
+
+
+const model = genAI.getGenerativeModel({
+    model : 'gemini-1.5-flash',  
+})
+
+
+// Enhanced version of summariseCode with better error handling and rate limiting
+export const summariseCode = async (doc: Document) => {
+
+    const maxRetries = 3;
+    const retryDelay = 1000; // 1 second delay between retries
+    
+    // Helper function to delay execution
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+    
+    // Helper function to clean and validate code
+    const prepareCode = (code: string) => {
+        if (!code.trim()) return null;
+        return code.slice(0, 10000); // Keep the 10k char limit
+    };
+    ensureStorageDir()
+    const tryGenerateSummary = async (attempt: number = 1): Promise<string> => {
+        try {
+            const code = prepareCode(doc.pageContent);
+            if (!code) {
+                return `Empty or invalid code in ${doc.metadata.source}`;
             }
-        })
-    })
 
-    return commits;
-}
-
-async function summariseCommit(githubUrl: string, commitHash: string) {
-    const cleanedUrl = githubUrl.replace(/\/$/, '');
-
-// Split the URL and extract owner and repo
-const [owner, repo] = cleanedUrl.split('/').slice(-2);
-console.log(owner,repo)
-
-    //get the diff, pass it to the ai model and return the response
-    const { data } = await axios.get(
-        `https://api.github.com/repos/${owner}/${repo}/commits/${commitHash}`,
-        {
-            headers: {
-                'Accept': 'application/vnd.github.v3+json',
-                'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
-                // Add User-Agent as GitHub API requires it
-                'User-Agent': 'Commit-Summarizer'
+            const response = await model.generateContent([
+                `You are an intelligent senior software developer who specializes in onboarding new developers.
+                You are onboarding a new developer who is a junior software developer and explain to them the purpose of the ${doc.metadata.source} file.
+                Here is the code snippet:
+                ---
+                ${code}
+                ---
+                Give a brief explanation of the purpose of the file in no more than 100 words.`
+            ]);
+            const summary = response.response.text();
+            await storeSummary(doc.metadata.source, summary);
+            return summary;
+            
+        } catch (error) {
+            console.error(`Attempt ${attempt} failed for ${doc.metadata.source}:`, error);
+            
+            if (attempt < maxRetries) {
+                await delay(retryDelay * attempt); // Exponential backoff
+                return tryGenerateSummary(attempt + 1);
             }
+            
+            throw error;
         }
-    );
-    // console.log(data);
-    const diffContent: string = data.files
-            .map((file: GitHubFile) => {
-                // Only include files that have changes
-                if (!file.patch) return '';
+    };
+
+    try {
+        return await tryGenerateSummary();
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        return `Failed to generate summary for ${doc.metadata.source} after ${maxRetries} attempts. Error: ${errorMessage}`;
+    }
+};
+
+// Enhanced version of generateEmbeddings with batching and progress tracking
+export const generateEmbeddings = async (docs: Document[]) => {
+    const batchSize = 5; // Process 5 documents at a time
+    const results: Array<{
+        summary: string;
+        embedding: number[];
+        SourceCode: string;
+        fileName: string;
+    }> = [];
+
+    for (let i = 0; i < docs.length; i += batchSize) {
+        const batch = docs.slice(i, i + batchSize);
+        console.log(`Processing batch ${i/batchSize + 1} of ${Math.ceil(docs.length/batchSize)}`);
+
+        const batchResults = await Promise.all(batch.map(async (doc, index) => {
+            try {
+                const summary = await summariseCode(doc);
+                console.log(`✓ Generated summary for ${doc.metadata.source}`);
                 
-                return `diff --git a/${file.filename} b/${file.filename}
-${file.patch}`;
-            })
-            .filter(Boolean)
-            .join('\n\n');
+                const embedding = await generateEmbedding(summary);
+                console.log(`✓ Generated embedding for ${doc.metadata.source}`);
 
-        if (!diffContent) {
-            throw new Error('No diff content available');
-        }
+                return {
+                    summary,
+                    embedding,
+                    SourceCode: JSON.parse(JSON.stringify(doc.pageContent)),
+                    fileName: doc.metadata.source,
+                };
+            } catch (error) {
+                console.error(`Failed processing ${doc.metadata.source}:`, error);
+                return null;
+            }
+        }));
 
-        console.log('Diff content preview:', diffContent.substring(0, 200) + '...'); // Debug log
+        results.push(...batchResults.filter((result): result is { summary: string; embedding: number[]; SourceCode: string; fileName: string } => result !== null));
         
-
-    console.log(diffContent.length)
-    // return '';
-    return await generate_summary(diffContent) || '';
+        // Add a small delay between batches to avoid overwhelming the API
+        if (i + batchSize < docs.length) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
     }
 
+    return results;
+};
 
-
-async function fetchProjetGithubUrl(projectId: string) {
-    const project = await db.project.findUnique({
-        where: {
-            id: projectId
-        },
-        select: {
-            githubUrl: true
-        }
-    })
-    
-    if(!project) {
-        throw new Error('Project not found');
+export const indexGithubResponse = async (githubUrl: string, githubToken?: string) => {
+    try {
+        const docs = await loadGithubLoader(githubUrl, githubToken);
+        console.log(`Loaded ${docs.length} documents from GitHub`);
+        
+        const allEmbeddings = await generateEmbeddings(docs);
+        console.log(`Successfully processed ${allEmbeddings.length} of ${docs.length} files`);
+        
+        return allEmbeddings;
+    } catch (error) {
+        console.error('Failed to index GitHub repository:', error);
+        throw error;
     }
-    
-    return { project, githubUrl: project.githubUrl };
-}
+};
 
-async function filterUnprocessedCommits(projectId: string, commitHashes: Response[]) {
-    const processedCommits = await db.commit.findMany({
-        where: {
-            projectId
-        }
+export const generateEmbedding = async (summary: string) => {
+    const model = genAI.getGenerativeModel({
+        model: 'text-embedding-004',
     })
-    
-    const processedCommitHashes = processedCommits.map((commit) => commit.commitHash);
-    
-    const unprocessedCommits = commitHashes.filter((commit) => !processedCommitHashes.includes(commit.commitHash));
-    
-    return unprocessedCommits;
+
+    const result = await model.embedContent(summary);
+    const embedding = result.embedding;
+    return embedding.values;
 }
 
-console.log('Processing...');
-console.log(await summariseCommit('https://github.com/docker/scout-cli','da332302b267fd9bf4a13f4b844685cc7fcd4e44'))
+const testRepo = async () => {
+    const results = await indexGithubResponse('https://github.com/docker/scout-cli');
+    console.log(`Processed ${results.length} files`);
+};
+
+await testRepo();

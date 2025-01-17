@@ -1,0 +1,521 @@
+fileSource,summary
+LICENSE,The LICENSE file is crucial for any software project.  It tells everyone how they're allowed to use; modify; and distribute the code.  This particular notice indicates the Docker Scout CLI isn't open-source under a standard license like MIT or GPL. Instead; its usage is governed by Docker's subscription agreement; which you must review for permitted uses and restrictions.  Essentially; it defines the legal terms for using this specific software.
+
+.github/CODEOWNERS,Hey there!  That `.github/CODEOWNERS` file is crucial for managing code ownership and reviews.  It specifies which team members or individuals are responsible for specific parts of the codebase. In this example; anyone contributing to anything under the `@docker/ssc-dev-features-back` path will automatically have their pull requests assigned to the relevant team/individual.  This ensures code gets reviewed by the right people; improving code quality and maintainability.  It streamlines the review process and prevents accidental oversights.
+
+README.md,The `README.md` file serves as the primary documentation for this Docker Scout CLI plugin repository.  It provides a high-level overview of the project; including its purpose; usage instructions; installation procedures (for various environments);  CI integration examples (GitHub Actions; GitLab CI; CircleCI; Azure DevOps); and licensing information.  Essentially; it's a quick-start guide and central hub for all essential information needed to understand and utilize the software.
+
+install.sh,This `install.sh` script downloads and installs the `docker-scout` CLI plugin.  It determines the correct binary for the user's operating system and architecture; downloads it from GitHub releases; verifies its checksum; and installs it to the user's Docker CLI plugin directory. The script uses helper functions for logging; HTTP downloads; and checksum verification; improving portability and robustness.  It also handles various command-line options for specifying installation directory and debug levels.
+
+.github/workflows/release-branch.yml,This `.github/workflows/release-branch.yml` file defines a GitHub Actions workflow for testing and releasing Docker images.  It's triggered on pull requests to `release/v` branches and manual dispatch.  The `test` job runs tests on a Docker image. If tests pass and the branch starts with `release/v`; the `release` job merges the branch; creates a tag based on the branch name (e.g.; `v1.0.0`); and pushes it to the `main` branch. Finally; a separate workflow (`release.yml`) is called to create a GitHub release.
+
+.github/workflows/release.yml,This `.github/workflows/release.yml` file defines a GitHub Actions workflow named "release".  It's triggered automatically on pushes with tags matching `v*.*.*` or manually via workflow dispatch or call.  The workflow creates a GitHub release draft. It checks out the code at the specified tag; then uses the `softprops/action-gh-release` action to create the draft; including files from the `dist/docker-scout_*` directory.  This automates the release process; simplifying deployments.
+
+dist/docker-scout_1.16.1_checksums.txt,This file; `dist/docker-scout_1.16.1_checksums.txt`; contains SHA-256 checksums for the different platform-specific builds of Docker Scout version 1.16.1.  These checksums are used to verify the integrity of downloaded files.  By calculating the checksum of a downloaded file and comparing it to the value in this file; you can ensure that the download was not corrupted during transfer and that the file is authentic.
+
+docs/docker_scout.yaml,This `docker_scout.yaml` file is a configuration file defining the structure and commands for the Docker Scout command-line interface (CLI).  It specifies the main command (`docker scout`); its subcommands (like `attestation`; `push`; `policy`);  and their associated configuration files (e.g.; `docker_scout_attestation.yaml`).  It also lists available options; such as `debug` and `verbose-debug`; detailing their data types; default values; and whether they are hidden or deprecated.  Essentially; it's a blueprint for the CLI's functionality.
+
+dist/docker-scout_darwin_arm64_v8.0/docker-scout,That's a binary file; specifically a compiled Go executable for a Darwin (macOS) ARM64 architecture system.  The `docker-scout` portion of the name suggests it's a program related to Docker image analysis or security scanning.  The `dist/` directory indicates it's a distribution artifact; ready for deployment.  In short; it's a ready-to-run program for macOS on Apple silicon; likely part of a Docker-related tool.  The seemingly random characters are likely parts of the compiled binary's internal structure; not human-readable code.
+
+dist/docker-scout_linux_arm64_v8.0/docker-scout,That's a binary file; specifically an ELF (Executable and Linkable Format) file for an ARM64 architecture Linux system.  The name `docker-scout` suggests it's a Docker image's executable.  The path `dist/docker-scout_linux_arm64_v8.0/` indicates this is the final build artifact; ready for deployment to a system with an ARM64v8 processor (like some Raspberry Pis or cloud instances).  Essentially; this is the compiled program that will run the `docker-scout` application inside a Docker container on that specific hardware.
+
+docs/docker_scout_attestation_add.yaml,This YAML file `docs/docker_scout_attestation_add.yaml` defines the documentation for the `docker scout attestation add` command.  It specifies the command's purpose (adding attestations to Docker images); usage; options (like specifying attestation files; organization; predicate type; and using a referrer endpoint); and inherited options (debug flags).  Essentially; it's a metadata file used to generate command-line help and documentation for this specific Docker Scout functionality.
+
+docs/docker_scout_cache_df.yaml,This YAML file defines the documentation for the `docker scout cache df` command.  It describes the command's purpose (showing Docker Scout's disk usage for cached SBOMs – Software Bill of Materials); how it works (listing cached image digests and sizes); and provides usage examples.  It also lists inherited options like debug flags and specifies that the command utilizes a temporary cache directory; configurable via an environment variable.  The file is used to generate command documentation.
+
+docs/docker_scout_cache.yaml,This `docs/docker_scout_cache.yaml` file defines the documentation for the `docker scout cache` command.  It describes the command's purpose (managing Docker Scout's cache and temporary files); links to related documentation (`docker_scout.yaml`; `docker_scout_cache_df.yaml`; `docker_scout_cache_prune.yaml`); and specifies available options like `debug` and `verbose-debug`.  Essentially; it's a metadata file guiding users on how to utilize the cache management functionality within the Docker Scout tool.
+
+docs/docker_scout_attestation.yaml,This `docker_scout_attestation.yaml` file defines a command; `docker scout attestation`;  used to manage software attestations within Docker image indexes.  It's a configuration file for a command-line tool (likely part of a larger Docker Scout system).  The file specifies aliases; a description; links to related configuration files (`docker_scout.yaml`; `docker_scout_attestation_add.yaml`); and optional flags like `debug` and `verbose-debug` for controlling the command's output.  Essentially; it acts as a blueprint for the `docker scout attestation` command's behavior and options.
+
+docs/docker_scout_cache_prune.yaml,This YAML file (`docs/docker_scout_cache_prune.yaml`) defines the documentation for the `docker scout cache prune` command.  It describes the command's purpose (removing temporary and cached SBOM data); usage; available options (like `--force` and `--sboms`); and provides example usage scenarios.  Essentially; it's a metadata file used to generate documentation or help text for the command; ensuring users understand how to effectively manage Docker Scout's cache.
+
+docs/docker_scout_enroll.yaml,This YAML file (`docs/docker_scout_enroll.yaml`) defines the documentation for the `docker scout enroll` command.  It describes the command's purpose (enrolling an organization with Docker Scout); its usage; and available options like `debug` and `verbose-debug`.  Essentially; it's a metadata file used to generate help documentation and command-line interface (CLI) help text for the Docker Scout enrollment process.  It ensures consistent and easily accessible information for users.
+
+docs/docker_scout_config.yaml,This YAML file (`docs/docker_scout_config.yaml`) defines the documentation for the `docker scout config` command.  It describes the command's purpose (managing Docker Scout configuration); usage; available options (like `organization`; `debug`; `verbose-debug`); and provides examples showing how to list; get; and set configuration values.  Essentially; it's a metadata file for the command; crucial for generating help text and documentation.
+
+docs/docker_scout_docker-cli-plugin-hooks.yaml,This YAML file defines a command; `docker scout docker-cli-plugin-hooks`; for executing plugin hooks within the Docker Scout system.  It specifies the command's short and long descriptions; usage; parent command (`docker scout`); and configuration file (`docker_scout.yaml`). Importantly; it also outlines inherited options like `debug` and `verbose-debug`; controlling the level of diagnostic output during execution.  This ensures consistent and configurable plugin hook execution within the Docker Scout framework.
+
+docs/docker_scout_compare.yaml,This YAML file (`docs/docker_scout_compare.yaml`) documents the `docker scout compare` command.  It's an experimental tool for comparing two Docker images (or similar artifacts like OCI directories or tarballs) to highlight differences; primarily focusing on vulnerabilities and policy violations.  The file details the command's usage; options (like filtering by severity or package type); and provides example usage scenarios.  Note that the command is experimental and its behavior might change.
+
+docs/docker_scout_cves.yaml,This YAML file (`docs/docker_scout_cves.yaml`) defines the metadata and usage instructions for the `docker scout cves` command.  It describes the command's purpose (analyzing software artifacts for vulnerabilities); supported artifact types (images; OCI directories; tarballs; etc.); available options (like output format; filtering; and EPSS scoring); and how to use it.  Essentially; it's the configuration file that generates the command's documentation and helps the command-line interface (CLI) understand and execute the `docker scout cves` command.
+
+docs/docker_scout_integration_configure.yaml,This YAML file; `docs/docker_scout_integration_configure.yaml`; documents the `docker scout integration configure` command.  It describes how to use the command to create or update integrations within a Docker organization.  The file details the command's purpose; usage; required and optional parameters (like integration name and organization namespace); and any inherited options (like debug flags).  Essentially; it's the specification for the command's help documentation.
+
+docs/docker_scout_help.yaml,This YAML file; `docs/docker_scout_help.yaml`; defines the help documentation for the `docker scout help` command.  It specifies the command's short and long descriptions; usage instructions; and its parent command (`docker scout`).  Crucially; it also lists inherited options like `debug` and `verbose-debug`; detailing their data types; default values; and whether they're hidden or deprecated.  This ensures consistent and accurate help output for users.
+
+docs/docker_scout_integration_delete.yaml,This YAML file defines the documentation for the `docker scout integration delete` command.  It specifies the command's purpose (deleting an integration configuration); usage; required arguments (`INTEGRATION`); and available options like `name` (integration name) and `org` (organization namespace).  It also lists inherited options for debugging and manages metadata flags indicating the command's status (deprecated; experimental; etc.).  Essentially; it's a metadata file driving the command's help text and documentation generation.
+
+docs/docker_scout_integration.yaml,This YAML file defines the command-line interface (CLI) structure for interacting with Docker Scout integrations.  It specifies the main command (`docker scout integration`);  sub-commands (configure; delete; list); and their associated configuration files (e.g.; `docker_scout_integration_configure.yaml`).  It also outlines shared options like `debug` and `verbose-debug`; improving code reusability and CLI consistency.  Essentially; it's a metadata file guiding the CLI's behavior for managing Docker Scout integrations.
+
+docs/docker_scout_environment.yaml,This YAML file defines the configuration for the `docker scout environment` command.  It's an experimental tool for managing Docker environments.  The command lets you list existing environments; view the images associated with them; and record new images into specific environments.  This allows for easier tracking and comparison of images across different deployment stages (e.g.; comparing `production` and `staging` environments).  The file details command usage; options (like specifying organization and output); and provides helpful examples.
+
+docs/docker_scout_integration_list.yaml,This YAML file; `docs/docker_scout_integration_list.yaml`; defines the documentation for the `docker scout integration list` command.  It specifies the command's purpose (listing available integrations); usage; options (like specifying integration name or organization); and inherited options (e.g.; debug flags).  Essentially; it's a metadata file used to generate help text and command documentation for the Docker Scout integration management tool.
+
+docs/docker_scout_quickview.yaml,This YAML file documents the `docker scout quickview` command.  It provides a quick security overview of a Docker image (or other supported artifact types like OCI directories or SBOMs); showing vulnerability summaries; base image information; and update recommendations.  The file details command usage; options (like filtering by policy or VEX statements); and examples.  It's used for generating command-line help and documentation.
+
+docs/docker_scout_push.yaml,This YAML file (`docs/docker_scout_push.yaml`) defines the documentation for the `docker scout push` command.  It describes how to use the command to upload Docker images to Docker Scout for analysis and storage.  The file specifies the command's usage; available options (like specifying the organization; enabling SBOM generation; or performing a dry run); and provides example usage.  It's crucial for generating user-facing documentation about this functionality.
+
+docs/docker_scout_recommendations.yaml,This YAML file (`docs/docker_scout_recommendations.yaml`) documents the `docker scout recommendations` command.  It details the command's purpose (analyzing images for base image updates); usage; supported artifact types (images; OCI directories; archives; etc.); available options (like filtering recommendations or specifying output); and provides example usage scenarios.  Essentially; it's the official documentation for this specific Docker Scout command; defining its functionality and parameters for users.
+
+docs/docker_scout_policy.yaml,This YAML file (`docs/docker_scout_policy.yaml`) defines the documentation for the `docker scout policy` command.  It describes the command's purpose (evaluating Docker Scout policies against a container image); usage; available options (like specifying an organization; environment; or output file); and provides example usage scenarios.  Essentially; it's a configuration file that generates the help documentation and specifies the command's behavior.  The `experimentalcli: true` flag indicates this command is still under development.
+
+docs/docker_scout_repo.yaml,This YAML file `docs/docker_scout_repo.yaml` defines metadata for the `docker scout repo` command group.  It outlines the command's purpose (managing Docker Scout on repositories); links to individual command definitions (`docker_scout_repo_disable.yaml`; etc.); and specifies shared options like `debug` and `verbose-debug`.  Essentially; it's a central registry entry describing the commands for enabling; disabling; and listing Docker Scout's repository-level functionality.
+
+docs/docker_scout_repo_list.yaml,This YAML file; `docs/docker_scout_repo_list.yaml`; documents the `docker scout repo list` command.  It describes the command's purpose (listing Docker Scout repositories within an organization); usage; available options (like filtering by name; status; or registry); and inherited options (like debug levels).  Essentially; it's a metadata file used to generate documentation and potentially command-line help for the `docker scout repo list` functionality.  The `plink` field points to another YAML file containing more detailed information about the `docker scout repo` command itself.
+
+.prettierrc,This configuration file specifies settings for Prettier; a code formatter.  It enables the use of single quotes for strings.  No external dependencies are declared.
+
+.gitignore,This file is a `.gitignore` configuration file. It specifies patterns for files and directories to be excluded from version control by Git.  It ignores common build artifacts; dependencies; local environment files; IDE configurations; and temporary files.  No external dependencies or integrations are involved; it's a self-contained configuration.
+
+README.md,This README.md file documents a Zoom clone project.  It details the project's purpose; features (authentication; meeting controls; scheduling); tech stack (Next.js; TypeScript; Clerk; getstream; Tailwind CSS); and setup instructions.  It also includes code snippets for styling and configuration.  External dependencies include Clerk for authentication and getstream for real-time functionality.
+
+components.json,This JSON file configures the UI framework; likely Shadcn UI.  It specifies a default style; enables React Server Components (RSC) and TSX; and integrates Tailwind CSS using a custom configuration file (`tailwind.config.ts`) and stylesheet (`app/globals.css`).  It also defines aliases for components and utility functions.
+
+.eslintrc.json,This JSON file configures ESLint for a Next.js project.  It extends the `next/core-web-vitals`; `standard`; `plugin:tailwindcss/recommended`; and `prettier` configurations; enforcing code style and best practices.  No custom rules are defined; it leverages existing style guides.
+
+postcss.config.js,This configuration file sets up PostCSS for a project.  It utilizes Tailwind CSS for styling and Autoprefixer for vendor prefixing.  No custom configurations are specified for either plugin.
+
+tsconfig.json,This JSON file configures the TypeScript compiler.  It enables features like JSX preservation;  strict type checking; and uses the Next.js plugin for enhanced development.  It targets ES modules; supports JSON imports; and utilizes path aliases for improved project organization.  The configuration includes specific files and excludes `node_modules`.
+
+next.config.mjs,This Next.js configuration file (`next.config.mjs`) configures the image optimization pipeline.  It allows loading images from `img.clerk.com` via the `images.remotePatterns` setting.  No other Next.js configurations are specified.
+
+app/(root)/(home)/personal-room/page.tsx,This `tsx` component renders a personal meeting room interface.  It utilizes Clerk for user authentication; Stream Video for call management; and Next.js navigation. Key features include displaying meeting details (ID; link); starting a new call (or joining existing); and copying the meeting link to the clipboard.  It depends on several custom hooks and UI components.
+
+app/(root)/(home)/previous/page.tsx,This .tsx file is a React component displaying a list of previous calls.  It renders a header and utilizes the `CallList` component with the `type` prop set to "ended" to display ended calls.  It depends on the `CallList` component located in the `@/components` directory.
+
+app/(root)/(home)/upcoming/page.tsx,This .tsx file defines a React component; `UpcomingPage`; displaying upcoming meetings.  It renders a header and utilizes the `CallList` component with the `"upcoming"` type prop to show a list of upcoming calls.  It depends on the `CallList` component; presumably for fetching and displaying call data.
+
+app/(root)/(home)/recordings/page.tsx,This .tsx file is a React component displaying a list of call recordings.  It renders a title and utilizes the `CallList` component with the `recordings` type prop.  It relies on the `CallList` component from `@/components/CallList` for data fetching and display.
+
+app/(root)/meeting/[id]/page.tsx,This `tsx` file is a React component `MeetingPage` rendering a video call.  It uses `@clerk/nextjs` for user authentication; `@stream-io/video-react-sdk` for video calls; and custom hooks (`useGetCallById`) and components (`MeetingSetup`; `MeetingRoom`) for call management and UI.  The component displays a loading indicator and error messages; conditionally rendering setup and meeting room views based on user authentication and call status.
+
+components/Alert.tsx,This .tsx file defines a React component `Alert`. It displays a centered card containing an optional icon; a title; and a button linking to the homepage.  It utilizes `next/link`; `next/image`; and UI components from `./ui/button` and `./ui/card`.  The component accepts `title` and optional `iconUrl` props.
+
+components/CallList.tsx,This React component displays a list of calls.  It fetches and renders ended calls; upcoming calls; or call recordings based on a `type` prop; using data from `useGetCalls` hook and the `@stream-io/video-react-sdk` library.  It conditionally renders a loading indicator and a "no calls" message.  Navigation is handled via `next/navigation`.
+
+components/MeetingCard.tsx,This .tsx file is a React component displaying meeting information.  It renders a card showing meeting title; date; icon; and attendee avatars.  A button is included to trigger a custom action and another to copy a meeting link; leveraging `useToast` for feedback. It uses Next.js `Image` component and relies on external utility functions and constants.
+
+components/HomeCard.tsx,This React component displays a home card.  It renders an image; title; and description within a styled card; optionally including a click handler.  Key props include `img`; `title`; `description`; and `handleClick`. It utilizes `next/image` for image rendering and `cn` for className concatenation.
+
+components/Loader.tsx,This .tsx file implements a reusable Loader component.  It displays a loading indicator using Next.js's `Image` component; centering it on the screen.  The component utilizes a loading icon from `/icons/loading-circle.svg` and has no configurable props.  It depends on the `next/image` library.
+
+components/MeetingModal.tsx,This .tsx file is a React component for a meeting modal.  It renders a dialog with a title; optional image; content; and a button (with optional icon and custom text).  It uses `Dialog` and `Button` components from the `./ui` directory and `next/image`. Key props include `isOpen`; `onClose`; `title`;  `children`; and customisation options for button and image.
+
+components/EndCallButton.tsx,This .tsx component renders an "End call for everyone" button.  It leverages `@stream-io/video-react-sdk` to conditionally display and manage the ending of a Stream call; redirecting to the homepage (`/`) upon successful call termination. Only the meeting owner can see and use this button.  It depends on `next/navigation` for routing and  `@stream-io/video-react-sdk` for call state management.
+
+components/Navbar.tsx,This .tsx file is a Next.js navigation bar component. It renders a logo; links to the homepage; and integrates Clerk.js for user authentication (UserButton) with a conditional render based on the login state.  It also includes a responsive `MobileNav` component and uses Next.js's `Image` and `Link` components.
+
+components/MeetingSetup.tsx,This React component (`MeetingSetup`) manages pre-call setup for video meetings.  It utilizes the `@stream-io/video-react-sdk` for call handling; displaying a pre-meeting alert if the call hasn't started or has ended; and providing controls for enabling/disabling camera and microphone.  Key features include a video preview; device settings; and a join button which sets a completion flag.
+
+components/MobileNav.tsx,This .tsx file is a React component for a mobile navigation drawer.  It renders a hamburger menu that; when clicked; reveals a sidebar containing navigation links sourced from `sidebarLinks`.  It uses Next.js's `Image` and `Link` components; along with a custom `Sheet` component for the drawer functionality and leverages `usePathname` for active link highlighting.  Dependencies include Next.js navigation and image components; and a custom UI component library.
+
+components/MeetingTypeList.tsx,This `tsx` file implements a `MeetingTypeList` component.  It renders a UI for creating; scheduling; and joining meetings using Stream Video and Clerk.js for user authentication. Key features include instant meeting creation; scheduled meeting creation with date/time selection; and joining meetings via link.  It uses `@stream-io/video-react-sdk`; `@clerk/nextjs`; and `next/navigation` for video conferencing; user management; and routing respectively.
+
+components/ui/dialog.tsx,This .tsx file implements a reusable dialog component.  It leverages `@radix-ui/react-dialog` for core functionality and provides styled components for the dialog overlay; content; header; footer; title; and description.  It uses Lucide-React for the close icon and includes styling with `cn` utility.
+
+public/icons/yoom-logo.svg,This SVG file renders a Yoom logo.  It uses paths to define the logo's shape and fill; employing linear gradients and multiple drop shadow filters for styling.  The logo consists of several layered shapes with different fills and strokes.
+
+.eslintrc.json,This JSON file configures ESLint for a Next.js project.  It extends the `next/core-web-vitals` configuration; inheriting its linting rules focused on web vitals best practices.  No custom rules are defined; the configuration relies entirely on the Next.js preset.
+
+next-env.d.ts,This type definition file extends Next.js's TypeScript type definitions.  It includes ambient declarations for Next.js and its image types; enabling TypeScript support for Next.js features within the project.  It's automatically generated and should not be modified.
+
+.gitignore,This file is a Git ignore configuration file. It specifies patterns for files and directories to be excluded from version control.  It ignores typical build artifacts; dependencies; local environment files; and debugging logs.  Key features include ignoring Node modules; Next.js output; and Vercel deployment artifacts.
+
+.babelrc,This configuration file specifies Babel presets for the project.  It utilizes the `next/babel` preset; enabling Babel's transpilation capabilities tailored for Next.js. This ensures compatibility with the Next.js framework and its specific requirements for JavaScript syntax and features.  No external dependencies beyond Next.js are explicitly declared.
+
+README.md,This README.md file provides instructions for a Next.js project.  It details setup using `npm` or `yarn`; outlines accessing the development server and API routes at `localhost:3000`; and points to relevant Next.js documentation and deployment resources on Vercel.  It leverages Next.js's API routes feature.
+
+tailwind.config.js,This configuration file configures Tailwind CSS.  It enables dark mode via a class; specifies the source files for styling (pages and components); and includes the `@tailwindcss/typography` plugin.  No custom theme extensions are defined.
+
+next.config.js,This configuration file configures a Next.js application.  It enables React Strict Mode;  defines image optimization settings including allowed formats; device and image sizes; and a cache TTL.  Internationalization is configured with a single locale ("en").  No external dependencies are explicitly declared.
+
+postcss.config.js,This configuration file sets up PostCSS for a project using Tailwind CSS.  It configures plugins including `tailwindcss`; `autoprefixer`; and `cssnano` (only in production).  `postcss-purgecss` removes unused CSS from the build; scanning specified directories for used classes.
+
+next-sitemap.js,This configuration file configures the `next-sitemap` plugin.  It defines the site URL; using an environment variable if available; defaulting to `https://localhost`; and enables robots.txt generation.  The configuration adheres to the `next-sitemap`'s `IConfig` interface.
+
+tsconfig.json,This `tsconfig.json` file configures the TypeScript compiler.  It targets ES5; includes DOM and ESNext libraries; allows JS files; skips library checks; and uses Node.js module resolution.  It preserves JSX and enables incremental compilation for faster builds.  The `include` and `exclude` options specify source and exclusion paths.
+
+pages/_app.tsx,This `tsx` file is a Next.js application entry point.  It wraps the application with theme switching using `next-themes`; SEO metadata from `next-seo` utilizing data from `../_data/social-media`; and renders the current page component.  It depends on `next-themes` and `next-seo`.
+
+pages/_document.tsx,This `_document.tsx` file defines a Next.js custom Document component. It customizes the HTML head to include Roboto font from Google Fonts.  It uses Next.js's built-in `Html`; `Head`; `Main`; and `NextScript` components for rendering the page structure and scripts.  The key functionality is adding the specified Google font to the page.
+
+pages/index.tsx,This `tsx` file implements the home page of a Next.js application.  It renders a basic layout including a navbar; footer; and SEO metadata using `next/head` and `next-seo`. The main content displays links to Next.js documentation; learning resources; examples; and deployment options.  It utilizes reusable components (`Navbar`; `Footer`).
+
+.gitignore,This file is a `.gitignore` file; specifying files and directories to exclude from version control. It ignores common log files; build artifacts (`node_modules`; `dist`); IDE-specific files; and temporary directories.  It explicitly includes `.vscode/extensions.json`; suggesting some degree of IDE configuration management.
+
+.prettierrc,This configuration file specifies formatting rules for Prettier; a code formatter.  It dictates aspects like single vs. double quotes (`singleQuote: false`); tab width (`tabWidth: 2`); semicolon usage (`semi: true`); line length (`printWidth: 100`); and bracket placement (`bracketSpacing`; `bracketSameLine`).  No external dependencies are declared.
+
+example-import.json,This JSON file stores a list of to-do items.  It represents each item with attributes including ID; completion status; name; description; deadline; associated categories; and metadata like emojis and colors.  Each task can belong to multiple categories; which are also defined within the data.
+
+index.html,This HTML file serves as the entry point for a React-based Todo application.  It sets up the page metadata; including SEO optimization (OG tags; Twitter cards); links external resources (fonts; icons); and integrates Google Analytics.  The application's main content is rendered within a `<div id="root">`; loaded dynamically via a `main.tsx` script.
+
+manifest.ts,This TypeScript file defines a Progressive Web App (PWA) manifest.  It configures the PWA's metadata; including name; icons; theme colors; shortcuts; and file handlers; using the `vite-plugin-pwa` library.  The manifest specifies various icons; screenshots; and defines shortcuts for adding tasks; viewing categories; and managing user profiles.  It also includes a file handler for JSON imports.
+
+netlify.toml,This .toml file configures Netlify redirects.  It implements a single redirect rule.  All requests ("/*") are redirected to "/index.html" with a 200 status code;  effectively serving a single-page application.
+
+tsconfig.json,This tsconfig.json file configures the TypeScript compiler.  It targets ESNext modules; utilizes bundler resolution; enables strict type checking with linting features; and supports React JSX.  It includes the `src` directory and extends configurations from `tsconfig.node.json`; leveraging types for Vite PWA and Vitest.
+
+tsconfig.node.json,This JSON file configures the TypeScript compiler for a Node.js environment.  It enables project compilation (`composite: true`); ignores type checking for external libraries (`skipLibCheck: true`); targets ESNext modules (`module: ESNext`); uses bundler-compatible module resolution (`moduleResolution: bundler`); and allows importing default exports from modules lacking explicit ones (`allowSyntheticDefaultImports: true`).  It includes `vite.config.ts` and `manifest.ts` for compilation.
+
+vite.config.ts,This Vite configuration file sets up a React project with testing; PWA functionality; and QR code generation.  It utilizes plugins for React; PWA (including service worker caching for scripts; styles; fonts; images; and navigation); and QR code generation for a specific local network address.  The PWA configuration uses a prompt for registration and employs a runtime caching strategy.
+
+.vscode/settings.json,This JSON file configures the VS Code Material Icon Theme.  It defines custom color decorators for specific file types and folders (`themeConfig.ts`; `*.styled.tsx`; `globalStyles.tsx`; `dev-dist`) using  `customClones` to override default icons; assigning custom colors and file extensions.  Dependencies are on the Material Icon Theme extension.
+
+public/logo.svg,This SVG file defines a logo graphic.  It uses paths and shapes to create a stylized icon; incorporating a gradient and masked elements for visual effect. The logo is 256x256 pixels and utilizes a linear gradient for shading.  No external dependencies are present.
+
+public/robots.txt,This robots.txt file defines rules for web robots (crawlers). It allows all user agents (`*`) access to all pages (`/`).  No specific dependencies or integrations are declared.
+
+src/App.tsx,This .tsx file is the main application component.  It renders the application UI; incorporating routing (`AppRouter`); layout (`MainLayout`); error handling (`ErrorBoundary`); and theming using `@mui/material` and `@emotion/react`.  It manages user settings; including theme preference and app badge updates based on task completion; leveraging a `UserContext` and custom hooks.  The app dynamically adjusts based on system and user-defined themes.
+
+src/main.tsx,This .tsx file is the main application entry point. It initializes the React application using ReactDOM; wraps the main App component with routing (BrowserRouter) and user context (UserContextProvider); and integrates PWA features using `virtual:pwa-register` for offline capabilities and update prompting.  It utilizes `ntc-ts` for color management and custom utility functions for toasts and update prompts.
+
+src/router.tsx,This React component `AppRouter` defines the client-side routing for the application using `react-router-dom`.  It uses lazy loading for improved performance; rendering pages including Home; TaskDetails; SharePage; AddTask; UserProfile; Transfer; Categories; Purge; and a 404 page (NotFound).  It integrates a custom `Loading` component for suspense handling.
+
+src/vite-env.d.ts,This type definition file augments the TypeScript compiler with Vite client types.  It provides type definitions for Vite's client-side APIs; enabling better TypeScript support within a Vite-based project.  No specific interfaces or types are explicitly defined; it leverages the `vite/client` type declarations.
+
+src/assets/bmc-logo-light.svg,This SVG file is a light-mode BMC logo.  It depicts the logo using paths with fill attributes defining color.  The logo is clipped to an 884x1279 pixel bounding box.  No external dependencies are present.
+
+src/assets/bmc-logo.svg,This SVG file defines a BMC logo.  It uses multiple paths to render the logo's vector graphic; primarily using dark grey (#101727) and gold (#ffbb00) fills. No external dependencies are apparent.
+
+src/components/BottomNav.tsx,This .tsx component renders a mobile-only bottom navigation bar.  It uses Material UI for styling and navigation; integrating with React Router for routing and a UserContext for user data. Key features include responsive design; dynamic badge updates reflecting pending tasks; and custom styling with animations.
+
+src/components/CategoryBadge.tsx,This TSX file defines a React component `CategoryBadge`.  It renders a styled MUI Chip displaying category information; including name; color; and an optional emoji; sourced from a `UserContext`.  It uses `emoji-picker-react` for emoji rendering and custom styling based on props and user settings; including a glow effect and hover/focus states.  Key props include `category` (a Category object) and `emojiSizes`.
+
+src/components/CategorySelect.tsx,This React component (`CategorySelect.tsx`) allows users to select multiple categories from a list.  It displays selected categories as badges;  supports emoji display; and limits selection to a maximum number of categories.  It integrates with `@mui/material` for UI elements; `react-router-dom` for navigation; and a custom `UserContext` for user data and theme.  Key props include `selectedCategories` and `onCategoryChange`.
+
+src/components/ColorPicker.tsx,This .tsx component is a custom color picker.  It allows users to select from a palette of existing colors and add new ones; providing visual feedback and integrating with user context for persistent color storage.  Key features include an accordion for color selection; popovers for color deletion; and a dialog for adding new colors. It depends on `@emotion/react`; `@mui/material`; `ntc-ts`; and `react-hot-toast` for styling; UI components; color name retrieval; and toast notifications respectively.
+
+src/components/DialogTitle.tsx,This React component enhances the Material UI `DialogTitle` component.  It adds support for a subtitle; custom icon; close button with onClose handler; and optional divider removal; all configurable via props.  It uses styled-components for styling and integrates Material UI's `DialogTitle`; `Divider`; and `IconButton` components.
+
+src/components/EmojiPicker.tsx,This React component (`CustomEmojiPicker`) displays an emoji picker.  It allows users to select or remove an emoji; leveraging local storage for frequently used emojis and optionally utilizing a Chrome AI API for emoji suggestions based on a provided name.  It integrates with Material UI and `emoji-picker-react`; depending on `UserContext` for user preferences and `useOnlineStatus` for online status checks.
+
+src/components/ErrorBoundary.tsx,This React component catches and displays errors.  It provides user-friendly error messages; options to refresh or clear local data; and displays the error stack for debugging.  It utilizes Material-UI for styling and components; and integrates with a UserContext for user data access and local storage manipulation.
+
+src/components/Loading.tsx,This React component displays a loading indicator.  It uses `@mui/material`'s `CircularProgress` to show a spinner after a 100ms delay.  It leverages `@emotion/styled` for styling; centering the spinner on the screen.  The `showLoading` state manages spinner visibility.
+
+src/components/LogoutDialog.tsx,This TSX component renders a logout confirmation dialog.  It uses MUI components for its UI and integrates with a `UserContext` to reset user state upon logout; displaying a confirmation toast. Key props include `open` (boolean) to control visibility and `onClose` for handling closure.  It utilizes custom components (`CustomDialogTitle`; `DialogBtn`) and utilizes a default user constant for state reset.
+
+src/components/Sidebar.tsx,This React component (`ProfileSidebar`) renders a user profile sidebar.  It displays user information; provides navigation links to app features (tasks; add task; categories; purge tasks; transfer); and links to GitHub repository information (stars; issues) and a Buy Me A Coffee page.  It uses Material UI components; React Router; and interacts with GitHub and Buy Me A Coffee APIs for data fetching.  PWA installation handling is also implemented.
+
+src/components/TaskIcon.tsx,This TSX component displays an SVG task icon.  It renders different icon variants ("add"; "error"; "success") based on props; using theme colors from `@emotion/react` and user settings from a `UserContext`.  It leverages `getFontColor` for contrast and conditionally applies a glow effect.  Key props include `scale`; `color`; and `variant`.
+
+src/components/Toaster.tsx,This .tsx component renders a custom toast notification system.  It utilizes `react-hot-toast` and adapts styling based on screen size and theme (light/dark mode) using Emotion and custom hooks.  Key features include responsive positioning and custom styling for success and error toasts; leveraging a theme configuration.
+
+src/components/TopBar.tsx,This TSX component displays a top navigation bar.  It renders a title and a back button using MUI components and React Router for navigation.  It utilizes styled-components for styling and integrates with a theme provider for dynamic color adjustments via `getFontColor` utility.  The `TopBar` component accepts a `title` prop.
+
+src/components/index.ts,This TypeScript module exports UI components.  It provides reusable components for a task management application; including task display; editing; navigation; settings; and user interface elements like dialogs; pickers; and badges.  No specific dependencies are declared within this file.
+
+src/components/settings/CustomRadioGroup.tsx,This .tsx file defines a reusable `CustomRadioGroup` component.  It renders a horizontally scrolling radio group with custom styling using `@mui/material` and `@emotion/styled`. Key features include custom icon and label display within styled boxes; dynamic color changes on selection; and responsive design. It relies on `OptionItem` type and `getFontColor` utility.  Props include `options`; `value`; and `onChange`.
+
+src/components/settings/CustomSwitch.tsx,This React component displays a custom toggle switch for user settings.  It utilizes MUI components and the `UserContext` to render a switch controlled by a specific setting key from the `User` type; updating the user state on toggle.  Key props include `header`; `text`; and `settingKey`.  It excludes `voice` and `voiceVolume` settings.
+
+src/components/settings/SettingsDialog.tsx,This .tsx component renders a settings dialog.  It provides UI elements for managing appearance (dark mode; theme); general settings; emoji style; text-to-speech options (voice selection and volume); and displays about information.  It uses MUI for UI components;  `emoji-picker-react` for emoji selection; and integrates with a `UserContext` for user settings persistence.  The dialog is responsive and adapts to mobile screens.
+
+src/components/settings/settingsTypes.ts,This type definition file specifies the `OptionItem` interface.  It defines a generic type representing an option with a label (string); value (generic type T); and an icon (JSX.Element).  No external dependencies are declared.
+
+src/components/tasks/EditTask.tsx,This React component (`EditTask`) allows editing existing tasks.  It provides a dialog with form fields for task name; description; deadline; color; emoji; and categories; using Material UI components. It integrates with `UserContext` for data persistence; and uses custom components like `ColorPicker` and `CategorySelect`.  Validation ensures name and description length limits are respected; unsaved changes trigger a browser warning.
+
+src/components/tasks/RenderTaskDescription.tsx,This React component renders a task description; intelligently handling links and displaying them with appropriate icons.  It uses context for expanded task state and responsive display logic;  highlighting search terms.  Key features include link detection;  icon rendering based on domain (YouTube thumbnails included); and show-more/show-less functionality for long descriptions.  It depends on MUI for icons and styling; custom hooks; and task data from a context provider.
+
+src/components/tasks/ShareDialog.tsx,This React component displays a dialog for sharing tasks.  It generates shareable links; QR codes; and offers copy-to-clipboard and system share functionality. It utilizes Material UI for styling and integrates with user context; QR code generation; and clipboard APIs.  Key props include `open`; `onClose`; `selectedTaskId`; and `selectedTask`.
+
+src/components/tasks/TaskMenu.tsx,This React component `TaskMenu` displays a context menu for managing tasks.  It provides options to mark tasks as done/undone; pin/unpin; view details; read aloud; share; edit; duplicate; and delete tasks. It uses `@mui/material` for UI;  `react-router-dom` for navigation; and integrates with `UserContext` and `TaskContext` for data management and state updates.
+
+src/components/tasks/TasksList.tsx,This React component displays a list of tasks.  It filters; sorts; and renders tasks based on search terms; categories; pinned status; and completion status; using  `UserContext` and `TaskContext` for data and state management.  Key features include task search; category filtering;  context menus; and bulk actions (mark as done; delete).  It utilizes MUI for UI components and several custom hooks for state management and UI logic.
+
+src/components/tasks/tasks.styled.tsx,This `tsx` file defines styled components for a task management UI.  It uses `@emotion/styled` and `@mui/material` to create visually styled components like task containers; input fields; and buttons; leveraging keyframes for animations and theme configuration for dynamic styling.  It incorporates utility functions for color determination and system information.
+
+src/constants/constants.ts,This TypeScript file defines constants for length restrictions and limits within the application.  It specifies maximum lengths for task names; descriptions; user names; profile picture URLs; and category names;  maximum counts for categories per task and colors in a list; and a regular expression for URL matching.  One constant (`MAX_TASKS`) is commented out.
+
+src/constants/defaultUser.ts,This type definition file provides a default `User` object.  It defines a comprehensive user structure including profile information; settings (like emoji style; theme; and notification preferences); default task categories; and a color palette.  It utilizes the `emoji-picker-react` library and the internal `systemInfo` utility for OS-specific emoji rendering.
+
+src/constants/index.ts,This TypeScript file re-exports constants.  It provides a single point of access for all constants defined in the `./constants` module. No additional functionality is implemented within this file itself.
+
+src/contexts/InputThemeProvider.tsx,This React component `CustomThemeProvider` adapts Material-UI themes for improved input visibility.  It merges Emotion and Material-UI themes; dynamically switching between light and dark modes based on the secondary theme color.  Key functionality includes conditional styling of `MuiFormLabel` and palette mode adjustment.  It depends on `@mui/material/styles`; `@emotion/react`; and internal `isDark` and `ColorPalette`.
+
+src/contexts/TaskContext.tsx,This React component file defines a context `TaskContext` for managing task-related state and actions.  It provides state for selected tasks; UI elements (modals; menus); search; and actions to manipulate this state.  Key features include state updates via dispatch functions and utility functions for task selection and UI interactions.  It depends on the `UUID` type from `../types/user`.
+
+src/contexts/TaskProvider.tsx,This React component provides context for task management.  It manages task selection (single and multiple); search; expansion state; and UI elements like modals and menus. It utilizes `useStorageState` for persistent state; and `useResponsiveDisplay` for responsive behavior.  The component exposes numerous state variables and handlers via a `TaskContext`.
+
+src/contexts/UserContext.tsx,This .tsx file defines a React Context `UserContext` for managing user data.  It provides a user object and a function to update it; using the `User` type from `../types/user` and a default user from `../constants/defaultUser`.  The context defaults to a placeholder user and a no-op setter.
+
+src/contexts/UserProvider.tsx,This .tsx file provides a React Context provider (`UserContextProvider`) for managing user state.  It utilizes a custom hook (`useStorageState`) to persist user data (`User` type) in local storage; defaulting to `defaultUser`.  The provider exposes the current `user` object and a `setUser` function to child components via the `UserContext`.  //Commented-out code suggests planned functionality for selective user updates.
+
+src/hooks/useCtrlS.ts,This custom React hook enables Ctrl+S keyboard shortcut to save tasks.  It utilizes the `UserContext` to access user tasks and the `exportTasksToJson` utility for JSON export; prompting user confirmation before saving.  The hook uses `useEffect` to add and remove a `keydown` event listener; ensuring cleanup.
+
+src/hooks/useOnlineStatus.ts,This TypeScript utility file provides a React hook; `useOnlineStatus`; to determine network connectivity.  It uses the browser's `online` and `offline` events to track the user's online status and returns a boolean representing connectivity.  It leverages `useState` and `useEffect` for state management and event handling; ensuring cleanup on unmount.
+
+src/hooks/useResponsiveDisplay.ts,This utility file provides a custom React hook; `useResponsiveDisplay`. It determines if the screen width is below a specified breakpoint (defaulting to 768 pixels); returning a boolean indicating whether the device is considered "smaller".  It uses the `useEffect` hook to manage window resize events; ensuring the boolean state updates dynamically.  It depends on React's `useState` and `useEffect` hooks.
+
+src/hooks/useStorageState.ts,This utility file provides a React hook; `useStorageState`; for managing persistent state.  It stores and retrieves values from `localStorage` or `sessionStorage`; synchronizing across tabs via storage events.  Key features include type safety; default value handling; and JSON serialization.  It depends on React's `useState` and `useEffect` hooks.
+
+src/hooks/useSystemTheme.ts,This utility file provides a React hook; `useSystemTheme`; to detect and react to the user's operating system theme preference.  It leverages `window.matchMedia` to determine if the system prefers a dark or light theme and updates a React state variable accordingly.  The hook returns a `SystemTheme` type ('light'; 'dark'; or 'unknown').  It utilizes `useState` and `useEffect` for state management and reactive updates.
+
+src/layouts/MainLayout.tsx,This React component `MainLayout` renders a page layout.  It utilizes `ProfileSidebar` and `BottomNav` components; wrapping user-provided content (`children`).  The layout includes a top `ProfileSidebar`;  bottom `BottomNav`; and a spacer to account for the sidebar's height.  It accepts a `children` prop of type `ReactNode` for dynamic content insertion.
+
+src/pages/AddTask.tsx,This React component (`AddTask.tsx`) allows users to add new tasks.  It provides input fields for task name; description; deadline; emoji; color; and categories; with validation and real-time feedback. It integrates with `UserContext` for user data; `useStorageState` for persistent local storage; and Material UI for components.  The component uses custom hooks and utility functions for task creation and error handling.
+
+src/pages/Categories.tsx,This .tsx component displays and manages user-defined categories.  It allows adding; editing; and deleting categories;  integrating with user settings and task data.  It uses React Context for user data;  `react-router-dom` for navigation; and Material UI for components.  Key features include emoji selection; color picking; and confirmation dialogs for deletion.
+
+src/pages/Home.tsx,This React component renders the home screen of a task management application.  It displays greetings; task completion statistics (including a progress bar and due today tasks); and a list of tasks. It utilizes several custom hooks (e.g.; `useOnlineStatus`; `useResponsiveDisplay`); contexts (e.g.; `UserContext`; `TaskProvider`); and Material UI components for UI rendering and state management.  Lazy loading is employed for the task list component.
+
+src/pages/NotFound.tsx,This React component displays a custom 404 page.  It utilizes `@mui/material` and `@emotion/styled` for styling and layout;  `react-router-dom` for navigation; and renders a custom error message or a default message indicating the missing page.  The component accepts a custom message prop and includes a button linking back to the home page.
+
+src/pages/Purge.tsx,This React component displays a UI for purging tasks.  It allows users to select and delete individual or all done tasks; or confirm deletion of all tasks via a dialog. It uses `UserContext` for task management; `useStorageState` for persistent selection; and MUI components for rendering.
+
+src/pages/Share.tsx,This .tsx file is a React component displaying a shared task.  It decodes a shared task from URL parameters; validates data; and renders its details.  It integrates with `UserContext` for user data updates and uses Material UI components for the UI.  The component handles different data formats and includes error handling for invalid links.
+
+src/pages/TaskDetails.tsx,This React component displays detailed information about a specific task.  It fetches task data based on a route parameter; rendering task details in a formatted table including emoji; ID; description; color; dates; completion status; and categories.  It uses `react-router-dom` for routing; `@emotion/styled` for styling; and integrates with `UserContext` for user data and  `CategoryBadge` for category display.  A `NotFound` component handles missing tasks.
+
+src/pages/Transfer.tsx,This React component (`Transfer.tsx`) manages task import and export functionality.  It allows users to select and export tasks as JSON; import tasks from JSON files via drag-and-drop; file upload; or clipboard;  handling file validation and merging with existing tasks. It uses `UserContext` for user data;  `useStorageState` for persistent state; and several Material UI components.  Error handling and user feedback via toast notifications are implemented.
+
+src/pages/UserProfile.tsx,This .tsx file is a React component for displaying and editing a user profile.  It allows users to change their name and profile picture; and includes logout functionality.  It uses MUI for UI components; useContext for user data; and styled-components for styling.  Key features include name and image editing with input validation and confirmation dialogs.
+
+src/services/bmcApi.ts,This TypeScript utility file fetches supporter count from the Buy Me a Coffee API for user 'maciekt07'.  It uses `fetch` to retrieve and parse HTML; extracting the count. Error handling includes logging; displaying a toast notification (using `showToast` from `../utils`); and returning a default value.  It defines the `BMCResponse` interface.
+
+src/services/githubApi.ts,This utility file fetches GitHub repository and branch information.  It uses the GitHub API to retrieve repository and branch details for a specified user; repository; and branch; handling potential errors including rate limiting and network issues using a toast notification.  It depends on `showToast` for user feedback and utilizes types defined in `../types/github`.
+
+src/styles/addTask.styled.tsx,This .tsx file styles components for adding tasks.  It uses styled-components to create `Container`; `AddTaskButton`; and `StyledInput` components; integrating MUI's `Button` and `TextField`.  `AddTaskButton` styles a button; while `StyledInput` styles a text field; both customizable via theme and props (e.g.; helper text color).  It utilizes a `getFontColor` utility for theme-based color contrast.
+
+src/styles/categories.styled.tsx,This .tsx file styles UI components for category management.  It uses styled-components to create reusable styled components like containers; input fields; and buttons; leveraging MUI Material UI components.  Key features include themed styling; custom scrollbars; and animation. It depends on `@emotion/styled`; `@mui/material`; and internal utility functions for color calculations and animations.
+
+src/styles/common.styled.tsx,This .tsx file exports styled components for UI elements.  It provides styled Button; Link; Avatar; and color selection elements; leveraging `@emotion/styled` and `@mui/material`.  Key features include custom styling; prop-based customization (e.g.; color; size); and animations.  It depends on `@emotion/styled`; `@mui/material`; and internal utility functions for color calculations and animations.
+
+src/styles/globalStyles.tsx,This `tsx` file defines a global styles component. It applies default styling to the application; including font settings; selection highlights; scrollbars; and theming based on a provided `theme` object from `@emotion/react`.  It utilizes  `getFontColor` utility function and integrates with the application's theme configuration (`ColorPalette` from `theme/themeConfig`).  It also styles various UI components; including dialogs; emoji pickers and Material UI components.
+
+src/styles/home.styled.tsx,This TSX file defines styled components for a home screen UI.  It utilizes `@emotion/styled` and `@mui/material` to create styled divs; buttons; and progress indicators with responsive design and animations (using keyframes from `keyframes.styled.tsx`).  It leverages utility functions (`getFontColor`; `isDark`) for theme-aware styling.  Key components include a greeting section; task counter; progress bar; and add button; all with conditional styling based on theme and props like `glow` and `animate`.
+
+src/styles/index.ts,This TypeScript file aggregates styled-component exports.  It re-exports styled components from various modules (globalStyles; home.styled; addTask.styled; keyframes.styled; common.styled; categories.styled; taskManagement.styled); providing a single entry point for the application's styling.  No specific functionality beyond aggregation is implemented.
+
+src/styles/keyframes.styled.tsx,This `.tsx` file defines reusable animation keyframes using `@emotion/react`.  It exports several keyframes for common animations like fade; slide; and scale; along with parameterized animations for pulse effects and a ring animation.  It uses a functional component approach for some keyframes allowing color and blur customization.
+
+src/styles/taskManagement.styled.tsx,This .tsx file styles components for a task management UI.  It uses styled-components and MUI for styling and component creation; defining components for task containers; headers; lists; drop zones; buttons; and an info icon.  It utilizes a custom `getFontColor` utility and incorporates styling for drag-and-drop functionality and custom scrollbars.
+
+src/theme/createTheme.ts,This TypeScript utility file creates and manages MUI themes.  It defines functions to generate custom themes based on provided colors and mode;  lists pre-defined themes; and determines dark mode based on user; system; and background color settings.  It uses `@mui/material` for theme creation and integrates with internal `useSystemTheme` hook and `user` type definitions.
+
+src/theme/muiComponents.ts,This TypeScript file defines Material UI (MUI) component overrides.  It customizes the styling and default props of `MuiTooltip`; `MuiButton`; `MuiSelect`; `MuiDialog`; `MuiAvatar`; `MuiAlert`; and `MuiTextField` components; primarily adjusting padding; border radius; and backdrop filter.  It utilizes the `@mui/material` Theme type for integration.
+
+src/theme/themeConfig.ts,This configuration file defines theme options for a UI.  It exports a `themeConfig` object containing various themes; each specified by a primary and optional secondary color;  and a `ColorPalette` object providing reusable color constants.  Themes are defined using string keys and objects with `primaryColor` and optional `secondaryColor` properties.
+
+src/types/ai.ts,This TypeScript type definition file specifies interfaces for an experimental Chrome AI API.  It defines types for creating and interacting with language models; including methods for prompting; streaming responses; managing tokens; and accessing model capabilities.  Key interfaces include `AILanguageModel`; `AILanguageModelFactory`; and related options types.  It declares the `window.ai` global variable.
+
+src/types/emotion.d.ts,This type definition file extends `@emotion/react`'s `Theme` interface.  It defines three properties: `primary` and `secondary` strings representing colors; and `darkmode`; a boolean indicating dark mode status.  This allows for typed access to theme properties within Emotion components; enforcing consistent usage of theme values.
+
+src/types/github.ts,This TypeScript type definition file defines interfaces for GitHub repository and branch data.  It structures responses from the GitHub API; including details on repository metadata; branch information; and commit details.  Nested interfaces represent owner; commit; and license information.
+
+src/types/launchQueue.d.ts,This type definition file specifies interfaces for an experimental PWA file access feature.  It defines `FileSystemFileHandle` representing a system file; `LaunchParams` containing an array of these handles; and `LaunchQueue` with a `setConsumer` method for handling file access requests.  The `Window` interface is augmented to optionally include a `launchQueue` property.
+
+src/types/ntc-ts.d.ts,This type definition file (`ntc-ts.d.ts`) provides TypeScript definitions for the `ntc-ts` color conversion library.  It exports interfaces `FORMATTED_COLOR` and type `COLOR`; and functions for obtaining color names (`getColorName`); RGB (`getRGB`); and HSL (`getHSL`) values from color strings; along with functions to initialize and access a color array (`initColors`; `ORIGINAL_COLORS`).
+
+src/types/user.ts,This type definition file defines interfaces for `User`; `Task`; `Category`; and `AppSettings`.  It establishes data structures for representing users; their tasks; categories; and application settings; including types for UUIDs and dark mode options.  It utilizes the `emoji-picker-react` library and includes optional fields in several interfaces.
+
+src/utils/colorUtils.ts,This utility file provides functions for color manipulation and validation.  It includes `isHexColor` for validating hex color codes; `getFontColor` for determining optimal font color (black or white) based on background color; and `isDark` to check if a color is dark.  It depends on the `ColorPalette` from `theme/themeConfig` for default color values.
+
+src/utils/exportTasks.ts,This utility file exports an array of `Task` objects (defined in `../types/user`) to a downloadable JSON file.  It utilizes `Blob` and URL APIs to create and trigger a download; using a timestamped filename.  The function `exportTasksToJson` takes an array of `Task` objects as input.
+
+src/utils/generateUUID.ts,This utility file generates universally unique identifiers (UUIDs).  It leverages the built-in `crypto.randomUUID()` if available; otherwise; it falls back to a less secure; manually implemented generation method.  It depends on the `UUID` type from `../types/user` and handles potential `crypto` API limitations.
+
+src/utils/getRandomGreeting.ts,This utility file provides a `getRandomGreeting` function. It returns a random; previously unused motivational message from a predefined array; ensuring a variety of greetings over time by tracking the last `maxRecentGreetings` (8) used.  The function manages a Set to track recently used greetings; preventing immediate repetition.  Emoji codes are included in some messages.
+
+src/utils/getSystemInfo.ts,This TypeScript utility file retrieves and provides system information. It defines `OperatingSystem` and `Browser` types and implements `getOperatingSystem` and `getBrowser` functions to detect the user's OS and browser using the `navigator.userAgent` string.  The `systemInfo` object exports the detected OS and browser.
+
+src/utils/index.ts,This utility file provides a collection of reusable functions.  It exports functions for task export (JSON); color manipulation (hex validation; dark mode detection; font color selection); greeting generation; system information retrieval; QR code saving; toast notifications; UUID generation; and date/time utilities (formatting; difference calculation; time ago representation).  No external dependencies are explicitly declared.
+
+src/utils/saveQRCode.ts,This utility file provides a `saveQRCode` function. It converts an SVG QR code from the DOM;  adds a task name and attribution text; renders it to a canvas; and triggers a PNG download.  It handles SVG retrieval; canvas manipulation; and download link creation.  It depends on the existence of a DOM element with the ID "QRCodeShare".
+
+src/utils/showToast.tsx,This `.tsx` file provides a `showToast` utility function.  It displays toast notifications using `react-hot-toast`;  allowing customization of type (error; success; loading); dismissal behavior; vibration; and inclusion of a dismiss button.  It leverages `@mui/material` for the dismiss button's styling and handles potential browser vibration API errors.
+
+src/utils/timeUtils.ts,This utility file provides functions for formatting and calculating time differences.  It offers `timeAgo`; `formatDate`; and `calculateDateDifference` for generating human-readable relative time strings and date differences; leveraging the browser's `Intl` API for localization.  Helper functions like `isSameDay`; `formatTime`; `formatDateOnly`; and `getDayOfWeek` support the main functions.  It relies on the browser's `Intl` object and `navigator.language`.
+
+src/utils/updatePrompt.tsx,This .tsx file implements a service worker update prompt. It utilizes the `react-hot-toast` library to display a toast notification when a new app version is installed; providing buttons to reload or dismiss the update.  It leverages the `ServiceWorkerRegistration` object's `updatefound` and `statechange` events for update detection and handling; using MUI components for rendering.
+
+src/utils/__tests__/colorUtils.test.ts,This test file verifies `colorUtils`.  It tests `isHexColor` for valid and invalid hex color strings; `getFontColor` for determining appropriate font color based on background color brightness using `ColorPalette`; and `isDark` for identifying dark versus light colors.  Dependencies include `ColorPalette` from `theme/themeConfig` and functions from `colorUtils`.
+
+src/utils/__tests__/getRandomGreeting.test.ts,This test file verifies the `getRandomGreeting` function.  It checks that the function returns a sufficient number of unique greetings over multiple calls; using a `Set` to track uniqueness and comparing the result to `maxRecentGreetings`.  The test relies on the `getRandomGreeting` and `maxRecentGreetings` exports from `../getRandomGreeting`.
+
+src/utils/__tests__/timeUtils.test.ts,This test file tests date utility functions.  It verifies the `timeAgo`; `formatDate`; and `calculateDateDifference` functions;  checking their output for various date inputs and accounting for locale changes (en-US and pl-PL).  The tests use Jest and Vitest (`vi.stubGlobal`).
+
+LICENSE,This file type is a legal notice. It specifies that the Docker Scout CLI is licensed under the Docker Subscription Service Agreement; directing users to the agreement's URL for details.  No code or functionality is defined within this file; it solely serves as a legal pointer.
+
+README.md,This README.md file documents the Docker Scout CLI plugin.  It details installation (Docker Desktop; manual; script); usage with environment variables; and CI integration examples (GitHub Actions; GitLab; CircleCI; Azure DevOps).  Key features include SBOM generation and CVE scanning.  It relies on Docker and a Docker registry for image access.
+
+install.sh,This shell script installs the `docker-scout` CLI.  It downloads a binary release from GitHub; verifying its checksum; and installs it to the specified directory.  It uses `curl` or `wget` for downloads and handles various operating systems and architectures.  Dependencies include `curl` or `wget`; `tar`; `unzip`; and `gsha256sum` or similar checksum utilities.
+
+.github/CODEOWNERS,This file is a CODEOWNERS configuration file. It designates the "@docker/ssc-dev-features-back" team as the owners of all files within its repository.  It uses the standard CODEOWNERS syntax for repository management and access control. No external dependencies are explicitly defined.
+
+.github/workflows/release-branch.yml,This YAML file configures a GitHub Actions workflow for testing and releasing Docker images.  It tests a `docker-scout` utility by running various commands against a sample image; then; if the branch starts with `release/v`; creates a Git tag; merges into `main`; and pushes the tag; triggering a release workflow.  It uses Docker login credentials and requires `GITHUB_TOKEN` secret.
+
+.github/workflows/release.yml,This YAML file configures a GitHub Actions workflow for creating draft releases.  It triggers on pushes with tags matching `v*.*.*` or workflow dispatches; using the `softprops/action-gh-release` action.  It checks out code at the specified ref (tag from push or input) and creates a draft release including files from `dist/docker-scout_*`.  It requires the `softprops/action-gh-release` action.
+
+dist/docker-scout_1.16.1_checksums.txt,This text file provides checksums for Docker Scout v1.16.1 binaries.  It lists SHA-256 checksums for each of the five different platform-specific build artifacts (darwin amd64; darwin arm64; linux amd64; linux arm64; windows amd64; and windows arm64).  This allows for verification of download integrity.
+
+dist/docker-scout_darwin_arm64_v8.0/docker-scout,This file is a binary file; seemingly containing mach-o object code for a Go program.  It's likely a compiled component of a larger Docker-related project; possibly a scout utility.  It includes sections such as __TEXT; __DATA; and __LINKEDIT; indicating compiled code; initialized data; and link information respectively. The file lists numerous external library dependencies; including `libSystem.B.dylib`; `libresolv.9.dylib`; `CoreFoundation`; and `Security`.
+
+dist/docker-scout_linux_arm64_v8.0/docker-scout,This file is a corrupted or binary file; not a text-based source code file.  It's impossible to determine its purpose; functionality; dependencies; or components from the provided data.  The content appears to be binary data; likely not meant for human interpretation.
+
+docs/docker_scout.yaml,This YAML file configures a Docker Scout command-line interface (CLI).  It defines the CLI's command structure; including subcommands (attestation; cache; etc.); options (debug; verbose-debug); and links to associated configuration files (e.g.; `docker_scout_attestation.yaml`).  The configuration includes boolean flags for debugging and verbose debugging.
+
+docs/docker_scout_attestation.yaml,This YAML file configures the `docker scout attestation` command.  It manages attestations on image indexes; offering `add` subcommand functionality (defined separately).  It inherits debug and verbose-debug options and is marked as experimental CLI functionality.  The configuration links to  `docker_scout.yaml` and `docker_scout_attestation_add.yaml`.
+
+docs/docker_scout_attestation_add.yaml,This YAML file configures the `docker scout attestation add` command.  It allows adding attestations to Docker images; specifying attestation files; organization namespace; predicate type; and whether to use a referrer endpoint.  It uses options for file paths; organization; predicate type; and referrer usage;  it also inherits debug options.
+
+docs/docker_scout_cache.yaml,This YAML file configures the `docker scout cache` command.  It manages Docker Scout's cache and temporary files; offering `df` and `prune` subcommands defined in separate YAML files.  It inherits `debug` and `verbose-debug` boolean options and lacks any experimental or deprecated flags.
+
+docs/docker_scout_cache_df.yaml,This YAML file configures the `docker scout cache df` command.  It displays Docker Scout's cache disk usage; showing temporary and cached SBOMs by image digest and size.  It integrates with Docker and utilizes environment variables (DOCKER_SCOUT_CACHE_DIR) for cache directory configuration.  The command also allows for debug and verbose-debug options.
+
+docs/docker_scout_cache_prune.yaml,This YAML file configures the `docker scout cache prune` command.  It removes temporary data and optionally cached SBOMs.  The `--force` flag disables confirmation prompts; and the `--sboms` flag enables SBOM cache deletion.  It inherits `debug` and `verbose-debug` options.
+
+docs/docker_scout_compare.yaml,This YAML file configures the `docker scout compare` command.  It facilitates comparison of two container images; OCI directories; tarballs; or local files/directories; highlighting differences.  It supports various output formats (text; markdown) and filtering options (severity; package type; etc.).  The command is experimental; and numerous options control the comparison process and output.
+
+docs/docker_scout_config.yaml,This YAML file configures the `docker scout` command-line tool. It allows listing; getting; and setting Docker Scout configurations; primarily the `organization` namespace.  It utilizes inherited boolean options for debug verbosity and integrates with the `docker` command.
+
+docs/docker_scout_cves.yaml,This YAML file configures the `docker scout cves` command.  It defines the command's purpose; usage; options for filtering and formatting vulnerability reports from various software artifact types (images; OCI directories; archives; and local files); and output options including Sarif; SPDX; and Markdown.  It supports various filtering options based on severity; EPSS score; and CVE IDs.
+
+docs/docker_scout_docker-cli-plugin-hooks.yaml,This YAML file configures a `docker scout` command; specifically `docker scout docker-cli-plugin-hooks`.  It defines the command's metadata (short description; usage; linked configuration file); and inherits boolean `debug` and `verbose-debug` options from a parent configuration (`docker_scout.yaml`).  No external dependencies are explicitly listed.
+
+docs/docker_scout_enroll.yaml,This YAML file configures the `docker scout enroll` command.  It enrolls a Docker Scout organization; taking the organization name (ORG) as an argument.  It inherits debug and verbose-debug options and is not deprecated or experimental.
+
+docs/docker_scout_environment.yaml,This YAML file configures the `docker scout environment` command.  It manages Docker environments; allowing listing; recording images (specifying platform); and referencing them in other commands like `docker scout compare`.  It supports options for output; organization namespace; and debugging; inheriting options from `docker_scout.yaml`.  The command is currently experimental.
+
+docs/docker_scout_help.yaml,This YAML file configures the `docker scout help` command.  It defines the command's purpose; usage; and inherited options including `debug` and `verbose-debug` (both boolean; hidden).  It leverages a `docker_scout.yaml` file (implied dependency) and specifies no deprecated; experimental; or platform-specific features.
+
+docs/docker_scout_integration.yaml,This YAML file configures the `docker scout integration` command group.  It defines commands to list; configure; and delete Docker Scout integrations; referencing associated YAML files (`docker_scout_integration_configure.yaml`; `docker_scout_integration_delete.yaml`; `docker_scout_integration_list.yaml`) for each subcommand.  It also includes optional `debug` and `verbose-debug` flags.
+
+docs/docker_scout_integration_configure.yaml,This YAML file configures the `docker scout integration configure` command.  It defines command-line options for creating or updating Docker Scout integration configurations; specifying integration name; organization namespace; and parameters.  It also inherits debug options.
+
+docs/docker_scout_integration_delete.yaml,This YAML file configures the `docker scout integration delete` command.  It defines the command's usage; options (including `name` and `org` for specifying the integration and organization); and inherited options like debug flags.  It deletes Docker Scout integration configurations.
+
+docs/docker_scout_integration_list.yaml,This YAML file configures the `docker scout integration list` command.  It lists available and installed Docker Scout integrations for a specified organization.  Key features include filtering by integration name and organization namespace.  It inherits `debug` and `verbose-debug` options.
+
+docs/docker_scout_policy.yaml,This YAML file configures the `docker scout policy` command.  It defines command-line options for evaluating Docker image policies against a specified image or repository; including options for specifying organizations; platforms; environments; and output formats.  The command uploads image analysis to Docker Scout for policy evaluation and supports various output and filtering options.  It depends on Docker Scout service for policy evaluation.
+
+docs/docker_scout_push.yaml,This YAML file configures the `docker scout push` command.  It defines options for pushing images to Docker Scout; including specifying the organization; author; platform; and enabling features like SBOM generation and secret scanning.  It depends on the `docker scout` command-line tool and uses a linked `docker_scout.yaml` file (likely for global configuration).
+
+docs/docker_scout_quickview.yaml,This YAML file configures the `docker scout quickview` command.  It displays a quick vulnerability overview of a Docker image (or other supported artifact types like OCI directories and SBOMs); including base image information and update recommendations.  The command supports various options for filtering results and specifying input sources;  and utilizes a `docker_scout.yaml` file (presumably for further configuration).
+
+docs/docker_scout_recommendations.yaml,This YAML file configures the `docker scout recommendations` command.  It displays base image update and refresh recommendations for various artifact types (images; OCI directories; tarballs; local files/directories); supporting filtering by type of recommendation and offering options for specifying image source; platform; tag; and output.  It uses options like `only-refresh`; `only-update`; `org`; `output`; `platform`; `ref`; and `tag` to control the analysis.
+
+docs/docker_scout_repo.yaml,This YAML file configures the `docker scout repo` command group.  It defines commands to list; enable; and disable Docker Scout on repositories; referencing associated YAML files (`docker_scout_repo_disable.yaml`; `docker_scout_repo_enable.yaml`; `docker_scout_repo_list.yaml`) for each subcommand.  It also includes optional `debug` and `verbose-debug` flags.
+
+docs/docker_scout_repo_disable.yaml,This YAML file configures the `docker scout repo disable` command.  It defines options for disabling Docker Scout on repositories; including disabling all repositories; filtering by name; specifying integrations; organizations; and registries.  It relies on the `docker scout` command-line tool and integrates with Docker Scout's repository management.
+
+docs/docker_scout_repo_enable.yaml,This YAML file configures the `docker scout repo enable` command.  It enables Docker Scout on specified repositories; offering options to enable all repositories in an organization; filter by repository name; specify an integration; and define the registry.  It uses options such as `--all`; `--filter`; `--integration`; `--org`; and `--registry`; and inherits debug options.
+
+docs/docker_scout_repo_list.yaml,This YAML file configures a `docker scout repo list` command.  It lists Docker Scout repositories; allowing filtering by name (regex); enabling/disabling status; registry; and organization.  It inherits debug options and utilizes a `docker_scout_repo.yaml` file (likely for shared configuration).
+
+docs/docker_scout_sbom.yaml,This YAML file configures the `docker scout sbom` command. It generates Software Bill of Materials (SBOMs) for various software artifacts (images; OCI directories; tarballs; local files/directories); offering output formats (JSON; SPDX; CycloneDX; list) and filtering by package type.  It supports specifying the artifact source (registry; local; etc.) and includes options for output redirection and debugging.
+
+docs/docker_scout_stream.yaml,This YAML file configures the `docker scout stream` command; an experimental tool for managing deployment streams.  It lists streams; records images to them; and defines command-line options like organization; output; and platform.  The command integrates with Docker and uses a referenced `docker_scout.yaml` file.  It's marked as deprecated but experimentally enabled in the CLI.
+
+docs/docker_scout_version.yaml,This YAML file configures a `docker scout version` command.  It defines the command's behavior; including usage; help text; and inherited options like debug flags.  It also displays version information and a logo; referencing a `docker_scout.yaml` file.
+
+docs/docker_scout_watch.yaml,This YAML file configures the `docker scout watch` command.  It defines options for watching Docker registry repositories; pushing images (and SBOMs) to Docker Scout; specifying repositories; tags; organizations; and controlling the watch interval and concurrency.  It supports a dry-run mode and allows pushing all images or only new ones.  The command depends on Docker and Docker Scout.
+
+docs/scout.md,This markdown file documents the Docker Scout command-line interface (CLI). It details subcommands for managing attestations; cache; configuration; integrations; policies; repositories; SBOMs; and more; enabling image scanning; vulnerability analysis; and policy enforcement within the Docker ecosystem.  Several experimental features are noted.
+
+docs/scout_attestation.md,This markdown file documents the `docker scout attestation` command. It manages attestations on image indexes; providing a subcommand `add` (documented separately) to add attestations to images.  The file also lists aliases for easier access.
+
+docs/scout_attestation_add.md,This markdown file documents the `docker scout attestation add` command.  It details adding attestations to a Docker image; specifying options for file location; organization namespace; predicate type; and referrer usage.  Dependencies on a `docker scout`  system are implied.
+
+docs/scout_cache.md,This markdown file documents the `docker scout cache` command. It manages Docker Scout's cache and temporary files; providing subcommands `df` (displays disk usage) and `prune` (removes cached/temporary data).  Each subcommand is further documented in separate files.
+
+docs/scout_cache_df.md,This markdown file documents the `docker scout cache df` command.  It explains how to view Docker Scout's temporary and persistent SBOM caches; showing image digests and sizes.  It also notes the cache directory location (configurable via environment variable) and mentions the `docker scout cache prune` command for cache cleanup.
+
+docs/scout_cache_prune.md,This markdown file documents the `docker scout cache prune` command. It describes how to remove temporary data and cached SBOMs using this command; detailing options like `-f` (force) and `--sboms` to control the pruning process.  It includes examples demonstrating both  temporary data removal and combined temporary and SBOM cache removal.
+
+docs/scout_compare.md,This markdown file documents the `docker scout compare` command. It compares two Docker images; highlighting differences; primarily focusing on vulnerabilities and policy violations.  Key features include flexible input formats (images; directories; archives);  filtering options (severity; package type; policy); and output formatting (text; markdown).  It supports various artifact prefixes for specifying image sources.
+
+docs/scout_config.md,This configuration file manages Docker Scout settings. It allows listing; getting; and setting the `organization` namespace used by default.  The `docker scout config` command interacts with this configuration; enabling users to manage their default Docker organization.  No external dependencies are explicitly mentioned.
+
+docs/scout_cves.md,This markdown file documents the `docker scout cves` command.  It displays CVEs identified in a Docker image; directory; or archive. Key features include flexible filtering by severity; CVE ID; package type; and EPSS score;  multiple output formats (including SARIF; SPDX; and GitLab); and options to ignore base images or suppressed vulnerabilities.  It requires a Docker environment and the `scout` tool.
+
+docs/scout_docker-cli-plugin-hooks.md,This Markdown file documents the `docker scout docker-cli-plugin-hooks` functionality.  It describes the execution of plugin hooks.  No specific hooks or dependencies are detailed in this minimal documentation.
+
+docs/scout_enroll.md,This markdown file documents the `docker scout enroll` command.  It describes how to enroll an organization with the Docker Scout service.  The documentation includes a command description.
+
+docs/scout_environment.md,This markdown file documents the `docker scout environment` command. It manages and lists Docker environments; allowing users to record images to specific environments for later comparison using other `docker scout` commands.  Key features include listing environments; listing images within an environment; and recording images to environments; specifying platforms.  It integrates with the `docker scout compare` command.
+
+docs/scout_help.md,This markdown file documents the `docker scout` help command.  It displays information about available commands.  No dependencies or integrations are described within this snippet.
+
+docs/scout_integration.md,This markdown file documents the Docker Scout integration CLI. It details commands to manage integrations; including configuration; deletion; and listing available integrations.  Each command is further documented in a separate file.
+
+docs/scout_integration_configure.md,This configuration file configures Docker Scout integrations. It allows creating or updating integration configurations specifying the name; Docker organization namespace; and parameters using command-line flags.  It requires a `--name`; `--org`; and at least one `--parameter`  in `NAME=VALUE` format.
+
+docs/scout_integration_delete.md,This markdown file documents the `docker scout integration delete` command. It describes how to delete a Docker Scout integration configuration using command-line options `--name` (integration name) and `--org` (organization namespace).  No further implementation details are provided within this snippet.
+
+docs/scout_integration_list.md,This markdown file documents the `docker scout integration list` command. It details how to list available Docker Scout integrations; specifying options for filtering by integration name and Docker organization namespace.  The command utilizes command-line arguments for filtering.
+
+docs/scout_policy.md,This markdown file documents the `docker scout policy` command. It evaluates Docker image policies using Docker Scout; displaying results or returning exit codes based on policy compliance.  Key options include specifying policies; organizations; output locations; platforms; and comparison environments.  It requires a connection to the Docker Scout service.
+
+docs/scout_push.md,This markdown file documents the `docker scout push` command.  It details pushing images or analysis results to Docker Scout; including options for author; organization; output location; platform; SBOM generation; secret scanning; and timestamping.  Dependencies on Docker and Docker Scout are implied.
+
+docs/scout_quickview.md,This markdown file documents the `docker scout quickview` command.  It provides a quick overview of image vulnerabilities; including base image vulnerabilities and refresh/update recommendations.  It supports various artifact types (images; OCI directories; tarballs; local files/directories; and SBOMs) specified via prefixes.  Key options control environment; policy filtering; and output.
+
+docs/scout_recommendations.md,This markdown file documents the `docker scout recommendations` command.  It displays base image update and refresh recommendations; analyzing specified or recently built images.  It supports various artifact types (images; OCI directories; tarballs; local files/directories) and offers filtering options (`--only-refresh`; `--only-update`).  The command uses image references (e.g.; `redis`; `curlimages/curl:7.87.0`) and allows specifying the input source (e.g.; `local://`; `registry://`).
+
+docs/scout_repo.md,This markdown file documents the `docker scout repo` command. It provides subcommands to manage Docker Scout's integration with repositories: enabling; disabling; and listing them.  Each subcommand is detailed in a separate markdown file.
+
+docs/scout_repo_disable.md,This markdown file documents the `docker scout repo disable` command. It describes how to disable Docker Scout repositories; offering options to disable all; filter by name; specify integrations; organizations; and registries.  Key features include granular control via flags (`--all`; `--filter`; `--integration`; `--org`; `--registry`).  It depends on the `docker scout` CLI tool.
+
+docs/scout_repo_enable.md,This markdown file documents the `docker scout repo enable` command. It enables Docker Scout scanning for specified repositories; optionally filtering by name or enabling all repositories within an organization.  Key options include `--all`; `--filter`; `--integration`; `--org`; and `--registry` for granular control.  It integrates with Docker Scout and requires a configured Docker environment.
+
+docs/scout_repo_list.md,This markdown file documents the `docker scout repo list` command.  It details command-line options for filtering and listing Docker Scout repositories; including filtering by name (regex); enabling/disabling status; registry; and organization.  No external dependencies are explicitly mentioned.
+
+docs/scout_sbom.md,This markdown file documents the `docker scout sbom` command.  It generates Software Bill of Materials (SBOMs) for various software artifacts including images; OCI directories; tarballs; and local files/directories. Key features include flexible output formats (JSON; SPDX; CycloneDX; list); package type filtering; and specifying artifact sources (image registry; local store; etc.).  It supports various input types and allows output redirection to a file.
+
+docs/scout_stream.md,This Markdown file documents the `docker scout stream` command.  It explains how to list existing deployment streams; list images within a stream; and record a new image to a specified stream and platform.  The command uses options for specifying the Docker organization; output file; and target platform.  It integrates with other `docker scout` commands like `docker scout compare`.
+
+docs/scout_version.md,This markdown file displays Docker Scout version information.  It prints the version number; Git commit hash; and Go version used to build the application.  The output includes a logo.
+
+docs/scout_watch.md,This Markdown file documents the `docker scout watch` command. It monitors Docker registries for new images and pushes them to Docker Scout; optionally including SBOMs.  Key features include configurable intervals; filtering by repository; tag; and the ability to push all images or only new ones. It requires a Docker Scout integration and depends on a Docker registry.
+
+.babelrc,This configuration file configures Babel.  It uses the `@babel/preset-env` preset to transpile JavaScript to support the last two browser versions; disabling module transformation (`modules: false`).  `@babel/preset-react` enables JSX support.  The `transform-class-properties` plugin allows the use of class properties.
+
+.editorconfig,This configuration file defines coding style conventions for the project.  It enforces UTF-8 encoding; LF line endings; a final newline; trailing whitespace trimming; and 2-space indentation.  No external dependencies are involved.
+
+.github/workflows/test.yml,This YAML file configures a GitHub Actions workflow. It defines a job named "build" that runs on macOS; checks out code; sets up Node.js version 20.x; installs dependencies; runs tests using `npm test`; and builds the project using `npm run build`.  It triggers on push events.
+
+app/App.tsx,This React component renders the main application UI.  It displays a header with the application title; subtitle; and installation instruction using `styled-components` for styling; and integrates `GamePanel` and `TypedShell` components to render a Tetris game and installation command.  Dependencies include `styled-components`; `GamePanel`; and `TypedShell`.
+
+app/Controller.tsx,This React component renders a Tetris game controller.  It displays buttons for movement (left; right; down; hard drop); rotation (clockwise; counter-clockwise); and holding pieces.  It relies on a `Controller` prop from `../src/components/Tetris` for functionality.
+
+app/GamePanel.tsx,This React component displays a Tetris game.  It renders the game board; score; held piece; piece queue; and game controls; using styled-components for styling.  It integrates with `Tetris`; `Controller` components; and handles game state (PLAYING; PAUSED; LOST) displaying appropriate UI elements.
+
+app/TypedShell.tsx,This .tsx component renders a styled text shell with a typewriter effect.  It utilizes `styled-components` for styling and `React`'s state and effect hooks to gradually reveal the input text character by character.  A key prop `children` (string) provides the text to display.
+
+app/index.html,This HTML file renders a Tetris game. It provides basic page structure; including a container div (`id="main"`) for the game and styles for game blocks using inline CSS; leveraging Bootstrap for styling.  It depends on an external Javascript file (`main.js`) for game logic.
+
+app/main.tsx,This .tsx file renders the React application.  It uses ReactDOM to mount the `App` component to the DOM element with the ID 'main'.  Dependencies include React and ReactDOM.
+
+bin/deploy,This shell script deploys a web application. It cleans the distribution directory; builds the application; minifies the JavaScript code using `uglifyjs`; copies the index.html; and deploys the resulting `dist` directory to GitHub Pages using `gh-pages`.  It requires Node.js; npm; `uglifyjs`; and `gh-pages` CLI tools.
+
+src/constants.ts,This TypeScript utility file defines constants for a game's dimensions and mechanics.  It specifies game grid size (GAME_WIDTH; GAME_HEIGHT); block dimensions (BLOCK_WIDTH; BLOCK_HEIGHT); and the number of rotations for game pieces (ROTATION_COUNT).  No external dependencies are present.
+
+src/context.ts,This TypeScript file provides a React Context for a `Game` object.  It utilizes the `Game` model from `./models/Game`; exporting a React Context initialized with a default `Game` instance created via `init()`.  The context enables easy access to the game state throughout the React component tree.
+
+src/components/Gameboard.tsx,This React component `GameboardView` renders a game board.  It uses a game state from a provided context (`Context`) and the `viewMatrix` and `getClassName` functions to display the game board as an HTML table.  Each cell represents a game piece; styled dynamically based on its type.  It depends on `Game` and `Piece` models for data and styling.
+
+src/components/HeldPiece.tsx,This React component displays the currently held game piece.  It utilizes the `Context` API to access the `heldPiece` object and renders a `PieceView` component; passing the `piece` property if available.  It depends on the `PieceView` component and the application's context for game state.
+
+src/components/PieceQueue.tsx,This React component displays a queue of game pieces.  It renders a list of `PieceView` components; each representing a single piece from the `queue` object accessed via the application's `Context`.  It depends on the `PieceView` component and the application's context for data.
+
+src/components/PieceView.tsx,This React component `PieceView` renders a visual representation of a Tetris-like game piece.  It utilizes the `Piece` model from `../models/Piece` to display blocks; using  `getBlocks` and `getClassName` for data access and styling.  Key props include `piece` (optional); defaulting to an empty 4x4 grid.
+
+src/components/Tetris.tsx,This React component renders a Tetris game.  It manages game state using a reducer; handles user input via custom hooks; and renders game components (Gameboard; HeldPiece; PieceQueue) using a render prop.  It utilizes a game model (`../models/Game`) and provides a controller for game actions.
+
+src/hooks/useKeyboardControls.ts,This React Hook `useKeyboardControls` maps keyboard inputs to game actions.  It uses `keymaster` to bind and unbind keyboard events; dynamically creating dispatch functions for each key in a provided `KeyboardMap`.  `DetectShift` handles special shift key logic.  It requires a `KeyboardMap` and a React `dispatch` function.
+
+src/models/Game.ts,This TypeScript file implements game logic for a Tetris-like game.  It defines the game state; actions; and an `update` function to transition between states based on user input.  Key features include piece manipulation (movement; rotation; holding); line clearing; scoring; and game over conditions.  It relies on external modules for piece queue management (`PieceQueue`) and constants (`Constants`); utilizing matrix operations for board manipulation.
+
+src/models/Matrix.ts,This TypeScript utility file provides functions for managing a game board represented as a matrix.  It implements matrix creation; piece placement (`addPieceToBoard`; `setPiece`); line clearing (`clearFullLines`); collision detection (`isEmptyPosition`); and piece movement functions (e.g.; `moveLeft`; `moveRight`; `flipClockwise`).  It utilizes `Constants` for game dimensions and depends on a `Piece` type and related functions from another file.
+
+src/models/Piece.ts,This TypeScript file defines game pieces for a Tetris-like game.  It provides types for piece identities and rotations;  functions to retrieve the block configuration (`getBlocks`) and CSS class name (`getClassName`) for each piece; and type guards for rotation validation.  It depends on a `Constants` module for `ROTATION_COUNT`.
+
+src/modules/detect-shift.ts,This TypeScript utility file detects Shift key presses. It uses `addEventListener` to monitor `keydown` and `keyup` events; triggering registered callbacks when the Shift key is pressed and released.  It provides `bind` and `unbind` functions to manage callbacks; ensuring efficient event handling.  No external dependencies beyond the browser's `document` object are present.
+
+src/modules/piece-queue.ts,This TypeScript type definition defines and implements a `PieceQueue` data structure.  It manages a queue of game pieces; replenishing from a bucket when the queue falls below a minimum length.  Key functions include `create`; `getNext`; and internal functions for filling and pulling pieces from the bucket.  It depends on the `Piece` model from `../models/Piece`.
+
+src/types/keymaster.d.ts,This type definition file specifies the API for the Keymaster library.  It defines interfaces `Keymaster`; `KeymasterEvent`; `KeyHandler`; and `FilterEvent` describing keyboard shortcut handling.  Key features include registering and unregistering shortcuts; scoped shortcuts; and querying pressed keys.  It declares a `keymaster` module export.
+
+test/index.ts,This test file verifies the `Game` model's core mechanics. It uses `assert` to test piece movement (left; right; down); pausing; and piece holding functionality;  leveraging the `update` and `init` functions from the `Game` model.  Dependencies include the `assert` module and the `Game` model.
+

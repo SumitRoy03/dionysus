@@ -10,7 +10,7 @@ import { redirect } from 'next/navigation';
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner';
-
+import { Loader2 } from 'lucide-react'
 
 type FormInput = {
     repoUrl : string,
@@ -26,7 +26,7 @@ const CreatePage = () => {
 
     function onSubmit(data: FormInput) {
         // console.log(data);
-        createProject.mutate({
+        createProject.mutateAsync({
             githubUrl: data.repoUrl,
             name: data.projectName,
             githubToken: data.githubToken
@@ -81,7 +81,16 @@ const CreatePage = () => {
                     >
                     </Input>
                     <div className="h-4"></div>
-                    <Button type='submit' disabled={createProject.isPending}>Create</Button>
+                    <Button type='submit' disabled={createProject.isPending}>
+                    {createProject.isPending ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Processing Repository...
+                                </>
+                            ) : (
+                                'Create'
+                            )}
+                    </Button>
 
                 </form>
             </div>
