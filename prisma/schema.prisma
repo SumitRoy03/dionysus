@@ -25,6 +25,7 @@ model User {
     credits Int @default(150) 
 
     userToProjects UserToProjects[]
+    questionsAsked Questions[]
 }
 
 model Project {
@@ -42,6 +43,8 @@ model Project {
     commits Commit[]
 
     sourceCodeEmbedding SourceCodeEmbedding[]
+
+    savedQuestions Questions[]
 }
 
 // Many to Many relationship
@@ -87,4 +90,21 @@ model SourceCodeEmbedding {
     projectId String
 }
 
+model Questions {
+    id String @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    question String
+    answer String
+
+    fileReferences Json?
+
+    projectId String
+    project Project @relation(fields: [projectId], references: [id])
+
+    userId String
+    user User @relation(fields: [userId], references: [id])
+
+}
 
