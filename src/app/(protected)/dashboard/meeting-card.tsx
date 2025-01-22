@@ -67,9 +67,7 @@ const MeetingCard = () => {
                 const uploadUrl = await response.success.url;
 
                 const downloadUrl = await response.success.bucketUrl;
-                console.log(downloadUrl);
                 const s3Response = await uploadFile(uploadUrl, file);
-                console.log(s3Response);
                 
                 console.log('Upload completed successfully');
 
@@ -79,9 +77,6 @@ const MeetingCard = () => {
             } finally {
                 setIsUploading(false);
             }
-            // const downloadUrl = await uploadFile(file as File, setProgress);
-            // const downloadUrl = await uploadFile(file as File)
-            // window.alert(downloadUrl)
             setIsUploading(false);
 
 
