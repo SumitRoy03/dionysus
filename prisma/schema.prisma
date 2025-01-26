@@ -33,6 +33,7 @@ model Meeting {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     
+    name String
     meetingUrl String
 
     projectId String
@@ -60,7 +61,7 @@ model Issue {
     summary String
 
     meetingId String
-    meeting Meeting @relation(fields: [meetingId], references: [id])
+    meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
 }
 
 model Project {

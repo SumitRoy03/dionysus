@@ -6,12 +6,29 @@ import React from 'react'
 import {  useDropzone  } from 'react-dropzone'
 import signedUrl from '@/app/actions/s3'
 import CustomCircularProgress from '@/app/_components/CustomCircularProgress';
+import { api } from '@/trpc/react';
+import useProject from '@/hooks/use-project';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
 
 
 const MeetingCard = () => {
     const [isUploading, setIsUploading] = React.useState(false)
     const [progress, setProgress] = React.useState(0);
     const [fileUrl, setFileUrl] = React.useState('');
+    const {project} = useProject();
+    const uploadMeeting = api.project.uploadMeeting.useMutation();
+    const router = useRouter()
+
+    const processMeeting = useMutation({
+        mutationFn: async (data: {meetingUrl:string, meetingId:string, projectId:string}) => {
+            const {meetingUrl, meetingId, projectId} = data;
+            const response = await axios.post('/api/process-meeting',{ meetingUrl, meetingId, projectId })
+            return response.data
+        }
+    })
 
     const uploadFile = async (url: string, file: File): Promise<void> => {
         return new Promise((resolve, reject) => {
@@ -60,13 +77,28 @@ const MeetingCard = () => {
                 const file = acceptedFiles[0]!;
                 const response = await signedUrl();
 
-                if (!response || !response.success?.url) {
+                if (!response || !response.success?.url || !project) {
                     throw new Error('Failed to get upload URL');
                 }
 
                 const uploadUrl = await response.success.url;
 
                 const downloadUrl = await response.success.bucketUrl;
+
+                uploadMeeting.mutate({
+                    projectId: project.id,
+                    meetingUrl: downloadUrl,
+                    name: file.name
+                },{
+                    onSuccess: (meeting) => {
+                        toast.success("Meeting uploaded successfully.")
+                        router.push('/meetings')
+                        processMeeting.mutateAsync({meetingUrl: meeting.meetingUrl, meetingId: meeting.id, projectId: meeting.projectId})
+                    },
+                    onError: () => {
+                        toast.error("Failed to upload the meeting.")
+                    }
+                })
                 const s3Response = await uploadFile(uploadUrl, file);
                 
                 console.log('Upload completed successfully');
