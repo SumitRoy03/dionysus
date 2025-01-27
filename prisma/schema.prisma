@@ -26,6 +26,7 @@ model User {
 
     userToProjects UserToProjects[]
     questionsAsked Questions[]
+    stripeTransactions StripeTransactions[]
 }
 
 model Meeting {
@@ -139,6 +140,18 @@ model Questions {
 
     projectId String
     project Project @relation(fields: [projectId], references: [id])
+
+    userId String
+    user User @relation(fields: [userId], references: [id])
+
+}
+
+model StripeTransactions { 
+    id String @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    credits Int
 
     userId String
     user User @relation(fields: [userId], references: [id])
