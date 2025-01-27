@@ -6,6 +6,9 @@ import React from 'react'
 import CommitLog from './commit-log'
 import AskQuestionCard from './ask-question-card';
 import MeetingCard from './meeting-card';
+import ArchieveButton from './archieve-button';
+import InviteButton from './invite-button';
+import TeamMembers from './team-members';
 
 const DashboardPage = () => {
 
@@ -32,9 +35,9 @@ const DashboardPage = () => {
         <div className="h-4"></div>
 
         <div className='flex items-center gap-4'>
-          Teammember
-          InviteButton
-          ArchieveButton 
+          <TeamMembers/>
+          <InviteButton/>
+          <ArchieveButton/> 
         </div>
 
 
