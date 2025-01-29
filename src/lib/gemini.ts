@@ -4,20 +4,6 @@ import { writeFile, readFile, appendFile, access } from 'fs/promises';
 import { constants,mkdirSync } from 'fs';
 import path from 'path';
 
-const STORAGE_DIR = path.join(process.cwd(), 'data', 'summaries');
-const SUMMARY_FILE = path.join(STORAGE_DIR, 'code-summaries.csv');
-
-// Helper to ensure storage directory exists
-const ensureStorageDir = async () => {
-    try {
-        await access(STORAGE_DIR, constants.F_OK);
-    } catch {
-        mkdirSync(STORAGE_DIR, { recursive: true });
-        // Create empty CSV with headers if it doesn't exist
-        await writeFile(SUMMARY_FILE, 'fileSource,summary\n');
-    }
-};
-
 
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
@@ -25,12 +11,6 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 const model = genAI.getGenerativeModel({
     model : 'gemini-1.5-flash',  
 })
-
-// Store new summary
-const storeSummary = async (fileSource: string, summary: string) => {
-    const csvLine = `${fileSource},${summary.replace(/,/g, ';')}\n`;
-    await appendFile(SUMMARY_FILE, csvLine);
-};
 
 
 export const generate_summary = async (diff : string) => {
@@ -105,7 +85,6 @@ export const summariseCode = async (doc: Document) => {
         if (!code.trim()) return null;
         return code.slice(0, 10000); // Keep the 10k char limit
     };
-    ensureStorageDir()
     const tryGenerateSummary = async (attempt: number = 1): Promise<string> => {
         try {
             const code = prepareCode(doc.pageContent);
@@ -142,7 +121,6 @@ ${code}
 Summary format: "This [file type] [main purpose]. It [key functionality]. [Important details if any]."`
             ]);
             const summary = response.response.text();
-            await storeSummary(doc.metadata.source, summary);
             return summary;
             
         } catch (error) {

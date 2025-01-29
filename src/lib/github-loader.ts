@@ -3,6 +3,7 @@ import { Document } from '@langchain/core/documents'
 import { generateEmbedding, summariseCode } from './gemini';
 import { db } from '@/server/db';
 import axios from 'axios';
+import { Octokit } from 'octokit';
 
 interface ProcessingStatus {
     fileName: string;
@@ -48,6 +49,50 @@ if (!owner || !repo) {
         const docs = await loader.load();
    
         return docs;
+}
+
+const getFileCount = async (path: string,  octokit: Octokit, githubOwner: string, githubRepo: string, acc: number = 0) => {
+    const { data } = await octokit.rest.repos.getContent({
+        owner: githubOwner,
+        repo: githubRepo,
+        path
+    })
+    if(!Array.isArray(data) && data.type === 'file') {
+        return acc + 1
+    }
+    if(Array.isArray(data)) {
+        let fileCount = 0
+        const directories : string[] = []
+
+        for(const item of data) {
+            if(item.type === 'dir') {
+                directories.push(item.path)
+            } else {
+                fileCount++;
+            }
+        }
+        if(directories.length > 0) {
+            const directoriesCount = await Promise.all(
+                directories.map(dirPath => getFileCount(dirPath, octokit, githubOwner, githubRepo, 0))
+            )
+            fileCount += directoriesCount.reduce((acc,count) => acc! + count!, 0)!;
+
+        }
+        return acc + fileCount
+    }
+}
+
+export const checkCredits = async (githubUrl: string, githubToken?: string) => {
+    const octokit = new Octokit({auth:githubToken})
+    const cleanedUrl = githubUrl.replace(/\/$/, '');
+
+    // Split the URL and extract owner and repo
+    const [githubOwner, githubRepo] = cleanedUrl.split('/').slice(-2);
+    if(!githubOwner || !githubRepo) return 0;
+
+    const fileCount = await getFileCount('',octokit,githubOwner,githubRepo,0);
+    return fileCount
+
 }
 
 //main function

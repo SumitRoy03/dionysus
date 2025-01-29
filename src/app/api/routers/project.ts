@@ -1,5 +1,5 @@
 import { pollCommits } from "@/lib/github";
-import { indexGithubResponse } from "@/lib/github-loader";
+import { checkCredits, indexGithubResponse } from "@/lib/github-loader";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 import { z } from "zod";
 
@@ -12,6 +12,17 @@ export const projectRouter = createTRPCRouter({
         })
     ).mutation(async ({ ctx ,input }) => {
         // console.log(input)
+        const user = await ctx.db.user.findUnique({ where: {id : ctx.user.userId!}, select: { credits: true  }})
+        if(!user) {
+            throw new Error('user not found')
+        }
+        const currentCredits = user.credits || 0
+
+        const fileCount = await checkCredits(input.githubUrl, input.githubToken)
+
+        if(currentCredits < fileCount!) {
+            throw new Error('Insuffcient credits')
+        }
         const project = await ctx.db.project.create({
             data: {
                 name: input.name,
@@ -25,7 +36,8 @@ export const projectRouter = createTRPCRouter({
         })
         await Promise.all([
             indexGithubResponse(project.id, input.githubUrl, input.githubToken),
-            pollCommits(project.id)
+            pollCommits(project.id),
+            await ctx.db.user.update({  where: {id: ctx.user.userId! }, data: { credits: {decrement: fileCount}} })
         ]);
         return project;
     }),
@@ -140,6 +152,13 @@ export const projectRouter = createTRPCRouter({
     }),
     getMyCredits: protectedProcedure.query(async ({ ctx }) => {
         return await ctx.db.user.findUnique({ where: { id: ctx.user.userId! }, select: { credits: true }  })
+    }),
+    checkCredits: protectedProcedure.input(z.object({ githubUrl: z.string(), githubToken: z.string().optional()})).mutation(
+        async ({ctx,input}) => {
+            const fileCount =  await checkCredits(input.githubUrl,input.githubToken)
+            const userCredits = await ctx.db.user.findUnique({  where: { id: ctx.user.userId!}, select: { credits: true }
+            })
+            return { fileCount, userCredits:userCredits?.credits || 0 } 
     })
 })
 
